@@ -1,4 +1,4 @@
-# SRE-ITB-backend
+# SweepIn-BE
 
 ## Class Diagram
 <p align="center">
