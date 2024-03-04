@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import { authRoutes } from "./auth/auth.routes"
+import { historyRoutes } from "./history/history.routes"
 
 dotenv.config()
 
@@ -13,6 +14,7 @@ app.use(express.static("static"))
 app.use(express.json())
 
 app.use(authRoutes)
+app.use('/api', historyRoutes)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running on port ${PORT}`)

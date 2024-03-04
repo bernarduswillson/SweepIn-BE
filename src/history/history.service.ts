@@ -2,13 +2,17 @@ import { db } from "../utils/db.server"
 import { History } from "@prisma/client"
 
 export const getHistory = async (
-  date: string,
-  userId: string
+  startdate: string | undefined,
+  enddate: string | undefined,
+  userId: string | undefined
 ): Promise<History[]> => {
   return await db.history.findMany({
     where: {
-      userId,
-      date
+      date: {
+        gte: startdate ? new Date(startdate).toISOString() : undefined,
+        lte: enddate ? new Date(enddate).toISOString() : undefined
+      },
+      userId
     }
   })
 }

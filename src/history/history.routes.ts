@@ -5,23 +5,30 @@ import { getHistory, getHistoryById } from "./history.service"
 
 export const historyRoutes = express.Router()
 
-// GET: /history?date=DATE?name=NAME
+// GET: /history?startdate=DATE&enddate=DATE&name=NAME
 historyRoutes.get("/history", async (req: Request, res: Response) => {
   try {
-    const { date, name } = req.query
-    const userId = await getUserByName(name as string)
-    if (!userId) {
-      return res.status(404).json({ message: "User not found" })
+    const { startdate, enddate, name } = req.query
+    let userId
+    if (name) {
+      const user = await getUserByName(name as string)
+      if (!user) {
+        throw new Error("User not found")
+      }
+      userId = user.id
     }
-    const history = await getHistory(date as string, userId.id)
     res.status(200).json({
       message: "success",
-      data: history
+      data: await getHistory(
+        startdate as string,
+        enddate as string,
+        userId as unknown as string | undefined
+      )
     })
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
-      message: error.message,
-      data: null
+      message: "error",
+      data: error.message
     })
   }
 })
@@ -35,9 +42,9 @@ historyRoutes.get("/history/:id", async (req: Request, res: Response) => {
       message: "success",
       data: history
     })
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
-      message: error.message,
+      message: "error",
       data: null
     })
   }
