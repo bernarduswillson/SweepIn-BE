@@ -19,9 +19,47 @@ model User {
   name     String     @unique
   password String?
   role     Role       @default(USER)
+  Activity Activity[]
+  History  History[]
+}
+
+model Log {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  date          DateTime
+  documentation String
+  latitude      Float
+  longitude     Float
+  ActivityStart Activity? @relation("ActivityStartLog")
+  ActivityEnd   Activity? @relation("ActivityEndLog")
+}
+
+model Activity {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String  @map("_userId") @db.ObjectId
+  user       User    @relation(fields: [userId], references: [id])
+  startLogId String? @unique @map("_startLogId") @db.ObjectId
+  startLog   Log?    @relation(fields: [startLogId], references: [id], name: "ActivityStartLog")
+  endLogId   String? @unique @map("_endLogId") @db.ObjectId
+  endLog     Log?    @relation(fields: [endLogId], references: [id], name: "ActivityEndLog")
+}
+
+model History {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @map("_userId") @db.ObjectId
+  user          User     @relation(fields: [userId], references: [id])
+  date          DateTime
+  status        Status   @default(WAITING)
+  description   String?
+  documentation String[]
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum Status {
+  ACCEPTED
+  REJECTED
+  WAITING
 }
