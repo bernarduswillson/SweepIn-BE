@@ -25,7 +25,7 @@ model User {
 
 model Log {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  date          DateTime
+  date          DateTime  @default(now())
   documentation String
   latitude      Float
   longitude     Float
@@ -34,20 +34,21 @@ model Log {
 }
 
 model Activity {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String  @map("_userId") @db.ObjectId
-  user       User    @relation(fields: [userId], references: [id])
-  startLogId String? @unique @map("_startLogId") @db.ObjectId
-  startLog   Log?    @relation(fields: [startLogId], references: [id], name: "ActivityStartLog")
-  endLogId   String? @unique @map("_endLogId") @db.ObjectId
-  endLog     Log?    @relation(fields: [endLogId], references: [id], name: "ActivityEndLog")
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @map("_userId") @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  startLogId String?  @unique @map("_startLogId") @db.ObjectId
+  startLog   Log?     @relation(fields: [startLogId], references: [id], name: "ActivityStartLog")
+  endLogId   String?  @unique @map("_endLogId") @db.ObjectId
+  endLog     Log?     @relation(fields: [endLogId], references: [id], name: "ActivityEndLog")
 }
 
 model History {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   userId        String   @map("_userId") @db.ObjectId
   user          User     @relation(fields: [userId], references: [id])
-  date          DateTime
+  date          DateTime @default(now())
   status        Status   @default(WAITING)
   description   String?
   documentation String[]
