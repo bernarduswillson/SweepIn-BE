@@ -1,7 +1,7 @@
 import express from "express"
 import type { Request, Response } from "express"
 import { getUserByName } from "../auth/auth.service"
-import { getHistory, getHistoryById } from "./history.service"
+import { getHistory, getHistoryById, postHistory } from "./history.service"
 
 export const historyRoutes = express.Router()
 
@@ -60,3 +60,20 @@ historyRoutes.get(
     }
   }
 )
+
+// POST: /history/:userId
+historyRoutes.post("/history/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const { date, description, documentation } = req.body
+    res.status(200).json({
+      message: "success",
+      data: await postHistory(userId, date, description, documentation)
+    })
+  } catch (error: any) {
+    res.status(500).json({
+      message: "error",
+      data: error.message
+    })
+  }
+})

@@ -24,3 +24,19 @@ export const getHistoryById = async (id: string): Promise<History | null> => {
     }
   })
 }
+
+export const postHistory = async (
+  userId: string,
+  date: string,
+  description: string,
+  documentation: string[]
+): Promise<History> => {
+  return await db.history.create({
+    data: {
+      date: new Date(date).toISOString(),
+      description,
+      documentation,
+      userId
+    }
+  })
+}
