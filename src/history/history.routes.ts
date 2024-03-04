@@ -9,21 +9,12 @@ export const historyRoutes = express.Router()
 historyRoutes.get("/history", async (req: Request, res: Response) => {
   try {
     const { startdate, enddate, name } = req.query
-    let userId
-    if (name) {
-      const user = await getUserByName(name as string)
-      if (!user) {
-        throw new Error("User not found")
-      }
-      userId = user.id
-    }
+    const user = name ? await getUserByName(name as string) : undefined
+    const userId = user ? user.id : undefined
+    if (userId === undefined) throw new Error("User not found")
     res.status(200).json({
       message: "success",
-      data: await getHistory(
-        startdate as string,
-        enddate as string,
-        userId as unknown as string | undefined
-      )
+      data: await getHistory(startdate as string, enddate as string, userId)
     })
   } catch (error: any) {
     res.status(500).json({
