@@ -40,3 +40,37 @@ historyRoutes.get("/history/:id", async (req: Request, res: Response) => {
     })
   }
 })
+
+
+historyRoutes.get("/history/user/:userId", async (req: Request, res : Response) => {
+  try {
+    const { userId } = req.params
+    const { startDate, endDate } = req.query
+    res.status(200).json({
+      message: "success",
+      data: await getHistory(startDate as string, endDate as string, userId)
+    })
+  } catch (error: any) {
+    res.status(500).json({
+      message: "error",
+      data: error.message
+    })
+  }
+})
+
+historyRoutes.get("/history/user/:userId/:id", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params
+    const { id } = req.params
+    const history = await getHistoryById(id)
+    res.status(200).json({
+      message: "success",
+      data: history
+    })
+  } catch (error : any) {
+    res.status(500).json({
+      message : "error",
+      data : error.message
+    })
+  }
+})
