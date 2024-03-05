@@ -1,5 +1,6 @@
 import express from "express"
 import type { Request, Response } from "express"
+import multer from "multer"
 import { getUserByName } from "../auth/auth.service"
 import {
   getActivity,
@@ -8,6 +9,9 @@ import {
   createStartLog,
   createEndLog
 } from "./attendance.service"
+import { uploadFile } from "../utils/firestore"
+
+const upload = multer()
 
 export const attendanceRoutes = express.Router()
 
@@ -89,17 +93,20 @@ attendanceRoutes.get("/log/:id", async (req: Request, res: Response) => {
 // POST: /activity/start/:activityId
 attendanceRoutes.post(
   "/activity/start/:activityId",
+  upload.any(),
   async (req: Request, res: Response) => {
     try {
       const { activityId } = req.params
-      const { latitude, longitude, documentation } = req.body
+      const { latitude, longitude } = req.body
+      const file = req
+
       res.status(200).json({
         message: "success",
         data: await createStartLog(
           activityId,
-          latitude,
-          longitude,
-          documentation
+          parseFloat(latitude),
+          parseFloat(longitude),
+          await uploadFile(file)
         )
       })
     } catch (error: any) {
@@ -114,13 +121,16 @@ attendanceRoutes.post(
 // POST: /activity/end/:activityId
 attendanceRoutes.post(
   "/activity/end/:activityId",
+  upload.any(),
   async (req: Request, res: Response) => {
     try {
       const { activityId } = req.params
-      const { latitude, longitude, documentation } = req.body
+      const { latitude, longitude } = req.body
+      const { files } = req
+
       res.status(200).json({
         message: "success",
-        data: await createEndLog(activityId, latitude, longitude, documentation)
+        data: await createEndLog(activityId, parseFloat(latitude), parseFloat(longitude), await uploadFile(files))
       })
     } catch (error: any) {
       res.status(500).json({
