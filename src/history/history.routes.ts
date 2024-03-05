@@ -1,7 +1,11 @@
 import express from "express"
 import type { Request, Response } from "express"
+import multer from "multer"
 import { getUserByName } from "../auth/auth.service"
 import { getHistory, getHistoryById, postHistory } from "./history.service"
+import { uploadFile } from "../utils/firestore"
+
+const upload = multer()
 
 export const historyRoutes = express.Router()
 
@@ -61,18 +65,36 @@ historyRoutes.get(
 )
 
 // POST: /history/:userId
-historyRoutes.post("/history/:userId", async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params
-    const { description, documentation } = req.body
-    res.status(200).json({
-      message: "success",
-      data: await postHistory(userId, description, documentation)
-    })
-  } catch (error: any) {
-    res.status(500).json({
-      message: "error",
-      data: error.message
-    })
+historyRoutes.post(
+  "/history/:userId",
+  upload.any(),
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params
+      const { description } = req.body
+      const { files } = req
+
+      let documentation: string[] = []
+
+      if (Array.isArray(files)) {
+        for (const file of files) {
+          const url = await uploadFile(file)
+          documentation.push(url)
+        }
+      } else {
+        const url = await uploadFile(files)
+        documentation.push(url)
+      }
+
+      res.status(200).json({
+        message: "success",
+        data: await postHistory(userId, description, documentation)
+      })
+    } catch (error: any) {
+      res.status(500).json({
+        message: "error",
+        data: error.message
+      })
+    }
   }
-})
+)
