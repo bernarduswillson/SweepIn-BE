@@ -98,7 +98,9 @@ attendanceRoutes.post(
     try {
       const { activityId } = req.params
       const { latitude, longitude } = req.body
-      const file = req
+      const files: File[] = req.files as unknown as File[]
+      if (!files) throw new Error("No file uploaded")
+      const file = files[0]
 
       res.status(200).json({
         message: "success",
@@ -126,11 +128,18 @@ attendanceRoutes.post(
     try {
       const { activityId } = req.params
       const { latitude, longitude } = req.body
-      const { files } = req
+      const files: File[] = req.files as unknown as File[]
+      if (!files) throw new Error("No file uploaded")
+      const file = files[0]
 
       res.status(200).json({
         message: "success",
-        data: await createEndLog(activityId, parseFloat(latitude), parseFloat(longitude), await uploadFile(files))
+        data: await createEndLog(
+          activityId,
+          parseFloat(latitude),
+          parseFloat(longitude),
+          await uploadFile(file)
+        )
       })
     } catch (error: any) {
       res.status(500).json({
