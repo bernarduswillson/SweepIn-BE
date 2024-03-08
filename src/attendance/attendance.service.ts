@@ -19,6 +19,31 @@ export const getActivity = async (
   })
 }
 
+export const getActivityById = async (
+  startDate: string | undefined,
+  endDate: string | undefined,
+  userId: string | undefined
+): Promise<Partial<Activity>[]> => {
+  return await db.activity.findMany({
+    where: {
+      startLog: {
+        date: {
+          gte: startDate ? new Date(startDate).toISOString() : undefined,
+          lte: endDate ? new Date(endDate).toISOString() : undefined
+        }
+      },
+      userId
+    },
+    select: {
+      id: true,
+      createdAt: true,
+      startLogId: true,
+      endLogId: true
+    }
+  });
+}
+
+
 export const createActivity = async (userId: string): Promise<Activity> => {
   return await db.activity.create({
     data: {

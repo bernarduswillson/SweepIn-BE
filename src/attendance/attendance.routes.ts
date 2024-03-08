@@ -7,7 +7,8 @@ import {
   createActivity,
   getLog,
   createStartLog,
-  createEndLog
+  createEndLog,
+  getActivityById
 } from "./attendance.service"
 import { uploadFile } from "../utils/firestore"
 
@@ -43,7 +44,7 @@ attendanceRoutes.get(
       const { startDate, endDate } = req.query
       res.status(200).json({
         message: "success",
-        data: await getActivity(startDate as string, endDate as string, userId)
+        data: await getActivityById(startDate as string, endDate as string, userId)
       })
     } catch (error: any) {
       res.status(500).json({
