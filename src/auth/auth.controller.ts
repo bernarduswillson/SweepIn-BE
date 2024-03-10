@@ -1,46 +1,29 @@
 import express from "express";
 import type { Request, Response } from "express";
+import { responseError } from "../class/Error"
 
-// Repository
-import { getUser } from "./auth.repository";
+import { verifyUserByEmail } from "./auth.service";
+
 
 const route = express.Router();
 
 /**
- * POST
- * /login 
- * body: email 
+ * @method POST /login
+ * @param {string} email - user's gmail
+ * @returns user's credentials
+ * 
+ * @example http://{{base_url}}/login
  * */ 
 route.post('/login', async (req: Request, res: Response) => {  
   try {
     const { email } = req.body;
-    
-    const user = await getUser(email);
-  
-    // Check if email is registered
-    if (!user) {
-      // Throw 401 - Unauthorized
-      return res.status(401).json({
-        message: 'Email is not registered'
-      });
-    }
-
-    // Throw 202 - Return credentials
+    const credentials = await verifyUserByEmail(email);
     return res.status(200).json({
       message: 'Login successful',
-      data: {
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }
+      data: credentials
     })
-
   } catch (error) {
-    // Throw server error
-    return res.status(500).json({
-      message: 'Internal server error'
-    });
+    responseError(error, res);
   }
 })
 
