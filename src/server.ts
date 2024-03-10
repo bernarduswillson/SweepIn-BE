@@ -3,9 +3,9 @@ import cors from "cors"
 import dotenv from "dotenv"
 import bodyParser from "body-parser";
 
-import { authController } from "./auth/auth.controller"
-import { historyRoutes } from "./history/history.routes"
-import { attendanceRoutes } from "./attendance/attendance.routes"
+import authController from "./auth/auth.controller"
+import attendanceController from "./attendance/attendance.controller"
+// import historyRoutes from "./history/history.routes"
 
 
 dotenv.config()
@@ -20,8 +20,8 @@ app.use(express.static("static"))
 app.use(express.json())
 
 app.use(authController)
-app.use("/api", historyRoutes)
-app.use("/api", attendanceRoutes)
+app.use("/attendance", attendanceController)
+// app.use("/api", historyRoutes)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running on port ${PORT}`)

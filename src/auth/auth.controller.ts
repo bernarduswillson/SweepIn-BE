@@ -4,14 +4,14 @@ import type { Request, Response } from "express";
 // Repository
 import { getUser } from "./auth.repository";
 
-export const authController = express.Router();
+const route = express.Router();
 
 /**
  * POST
  * /login 
  * body: email 
  * */ 
-authController.post('/login', async (req: Request, res: Response) => {  
+route.post('/login', async (req: Request, res: Response) => {  
   try {
     const { email } = req.body;
     
@@ -43,3 +43,5 @@ authController.post('/login', async (req: Request, res: Response) => {
     });
   }
 })
+
+export default route;

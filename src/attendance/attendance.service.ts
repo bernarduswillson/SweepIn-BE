@@ -1,119 +1,20 @@
-import { db } from "../utils/db.server"
-import { Log, Activity } from "@prisma/client"
+import { findFilteredAttendance } from "./attendance.repository";
 
-export const getActivity = async (
+const getFilteredAttendance = async (
+  userId: string | undefined, 
   startDate: string | undefined,
   endDate: string | undefined,
-  userId: string | undefined
-): Promise<Activity[]> => {
-  return await db.activity.findMany({
-    where: {
-      startLog: {
-        date: {
-          gte: startDate ? new Date(startDate).toISOString() : undefined,
-          lte: endDate ? new Date(endDate).toISOString() : undefined
-        }
-      },
-      userId
-    }
-  })
-}
+  page: string, 
+  perPage: string) => {
+  const about = await findFilteredAttendance(
+    userId,
+    startDate,
+    endDate,
+    parseInt(page),
+    parseInt(perPage)
+  );
 
-export const getActivityById = async (
-  startDate: string | undefined,
-  endDate: string | undefined,
-  userId: string | undefined
-): Promise<Partial<Activity>[]> => {
-  return await db.activity.findMany({
-    where: {
-      startLog: {
-        date: {
-          gte: startDate ? new Date(startDate).toISOString() : undefined,
-          lte: endDate ? new Date(endDate).toISOString() : undefined
-        }
-      },
-      userId
-    },
-    select: {
-      id: true,
-      createdAt: true,
-      startLogId: true,
-      endLogId: true
-    }
-  });
-}
+  return about;
+};
 
-
-export const createActivity = async (userId: string): Promise<Activity> => {
-  return await db.activity.create({
-    data: {
-      userId
-    }
-  })
-}
-
-export const getLog = async (id: string): Promise<Log | null> => {
-  return await db.log.findFirst({
-    where: {
-      id
-    }
-  })
-}
-
-export const createStartLog = async (
-  activityId: string,
-  latitude: number,
-  longitude: number,
-  documentation: string
-): Promise<Activity> => {
-  const transaction = await db.$transaction(async (prisma) => {
-    const startLog = await prisma.log.create({
-      data: {
-        latitude,
-        longitude,
-        documentation
-      }
-    })
-
-    const activity = await prisma.activity.update({
-      where: {
-        id: activityId
-      },
-      data: {
-        startLogId: startLog.id
-      }
-    })
-
-    return activity
-  })
-  return transaction
-}
-
-export const createEndLog = async (
-  activityId: string,
-  latitude: number,
-  longitude: number,
-  documentation: string
-): Promise<Activity> => {
-  const transaction = await db.$transaction(async (prisma) => {
-    const endLog = await prisma.log.create({
-      data: {
-        latitude,
-        longitude,
-        documentation
-      }
-    })
-
-    const activity = await prisma.activity.update({
-      where: {
-        id: activityId
-      },
-      data: {
-        endLogId: endLog.id
-      }
-    })
-
-    return activity
-  })
-  return transaction
-}
+export { getFilteredAttendance };
