@@ -1,7 +1,7 @@
 import { db } from "../utils/db.server";
 
-// Find attendance by userId, startDate, endDate, page, and perPage
-const findFilteredAttendance = async (
+// Find attendance by userId, startDate, endDate, page, and perPage then sort by date 
+const findAllAttendance = async (
   userId: string | undefined, 
   startDate: string | undefined,
   endDate: string | undefined,
@@ -35,4 +35,4 @@ const findOneAttendance = async (attendanceId: string) => {
   return ret;
 }
 
-export { findFilteredAttendance, findOneAttendance };
+export { findAllAttendance, findOneAttendance };

@@ -1,20 +1,26 @@
 import express from "express";
 
-import { getFilteredAttendance, getOneAttendance } from "./attendance.service";
+import { filterAttendances, getOneAttendance } from "./attendance.service";
 
 const route = express.Router();
 
 /**
- * GET
- * /attendance
- * query: user_id?, start_date?, end_date?, page?, per_page?
+ * @method GET /attendance
+ * @param {string} user_id 
+ * @param {string} start_date
+ * @param {string} end_date
+ * @param {string} page - Current page
+ * @param {string} per_page - The number of data in a page 
+ * @returns attendances
+ * 
+ * @example http://{{base_url}}/attendance?user_id=:userId&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
 route.get("/", async (req, res) => {
   try {
     const { user_id, start_date, end_date, page, per_page } = req.query;
 
     // Get and filter attendance
-    const attendances = await getFilteredAttendance(
+    const attendances = await filterAttendances(
       user_id as string, 
       start_date as string,
       end_date as string,

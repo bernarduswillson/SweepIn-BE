@@ -6,7 +6,6 @@ import { getUserByEmail } from "./auth.repository";
  * Verify user by email
  * 
  * @description Verify if user has access to the app 
- * @param {string} email - user's gmail
  * @returns User's credentials
  */
 const verifyUserByEmail = async (email: string) => {

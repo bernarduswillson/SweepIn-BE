@@ -1,13 +1,18 @@
-import { findFilteredAttendance, findOneAttendance } from "./attendance.repository";
+import { findAllAttendance, findOneAttendance } from "./attendance.repository";
 
-// Get attendance by userId, startDate, endDate, page, and perPage
-const getFilteredAttendance = async (
+/**
+ * Filter attendances
+ * 
+ * @description Filter attendances by userId, startDate, endDate then slice it into pages
+ * @returns Attendances
+ */
+const filterAttendances = async (
   userId: string | undefined, 
   startDate: string | undefined,
   endDate: string | undefined,
   page: string, 
   perPage: string) => {
-  const attendance = await findFilteredAttendance(
+  const attendance = await findAllAttendance(
     userId,
     startDate,
     endDate,
@@ -23,4 +28,4 @@ const getOneAttendance = async (attendanceId: string) => {
   return attendance
 }
 
-export { getFilteredAttendance, getOneAttendance };
+export { filterAttendances, getOneAttendance };
