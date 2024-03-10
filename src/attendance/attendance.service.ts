@@ -31,13 +31,19 @@ const filterAttendances = async (
  * @returns Attendance
  */
 const getAttendanceDetails = async (attendanceId: string) => {
-  const attendance = await findOneAttendance(attendanceId);
-  
-  if (!attendanceId) {
+  try {
+    const attendance = await findOneAttendance(attendanceId);
+    return attendance;
+  } catch (err: any) {
     throw new NotFoundError("Attendance not found");
   }
-
-  return attendance;
 }
+
+/**
+ * Get attendance details
+ * 
+ * @description Find attendance details by id
+ * @returns Attendance
+ */
 
 export { filterAttendances, getAttendanceDetails };

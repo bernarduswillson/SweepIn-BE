@@ -30,9 +30,7 @@ route.get("/", async (req, res) => {
 
     res.status(200).json({
       message: "Get all attendance successful",
-      data: {
-        attendances,
-      },
+      data: attendances
     });
   } catch (error) {
     responseError(error, res);
@@ -53,14 +51,12 @@ route.get('/:attendanceId', async (req, res) => {
     const attendance = await getAttendanceDetails(attendanceId as string);
 
     return res.status(200).json({
-      message: "Get one attendance successful",
+      message: "Get attendance details successful",
       data: attendance
     })
 
   } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    responseError(error, res);
   }
 })
 
