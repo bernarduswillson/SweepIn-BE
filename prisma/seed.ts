@@ -5,11 +5,13 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Seeding for attendances
-  for (let attendance of attendances) {
-    await prisma.attendance.create({
-      data: attendance
-    })
-  }
+  // for (let attendance of attendances) {
+  //   await prisma.attendance.create({
+  //     data: attendance
+  //   })
+  // }
+
+  // Seeding for reports
 }
 
 main().catch(e => {
