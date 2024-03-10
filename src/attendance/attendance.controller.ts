@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getFilteredAttendance } from "./attendance.service";
+import { getFilteredAttendance, getOneAttendance } from "./attendance.service";
 
 const route = express.Router();
 
@@ -34,5 +34,36 @@ route.get("/", async (req, res) => {
     });
   }
 });
+
+/**
+ * GET
+ * /attendance/:attendanceId
+ * params: attendanceId
+ */
+route.get('/:attendanceId', async (req, res) => {
+  try {
+    const attendanceId = req.params.attendanceId;
+
+    // Get one attendance
+    const attendance = await getOneAttendance(attendanceId as string);
+    
+    // Check if attendance id exists
+    if (!attendance) {
+      return res.status(404).json({
+        message: "Attendance not found",
+      });
+    } 
+
+    return res.status(200).json({
+      message: "Get one attendance successful",
+      data: attendance
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+})
 
 export default route;

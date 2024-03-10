@@ -1,12 +1,13 @@
-import { findFilteredAttendance } from "./attendance.repository";
+import { findFilteredAttendance, findOneAttendance } from "./attendance.repository";
 
+// Get attendance by userId, startDate, endDate, page, and perPage
 const getFilteredAttendance = async (
   userId: string | undefined, 
   startDate: string | undefined,
   endDate: string | undefined,
   page: string, 
   perPage: string) => {
-  const about = await findFilteredAttendance(
+  const attendance = await findFilteredAttendance(
     userId,
     startDate,
     endDate,
@@ -14,7 +15,12 @@ const getFilteredAttendance = async (
     parseInt(perPage)
   );
 
-  return about;
+  return attendance;
 };
 
-export { getFilteredAttendance };
+const getOneAttendance = async (attendanceId: string) => {
+  const attendance = await findOneAttendance(attendanceId);
+  return attendance
+}
+
+export { getFilteredAttendance, getOneAttendance };

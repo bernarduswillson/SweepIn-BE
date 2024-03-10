@@ -1,5 +1,6 @@
 import { db } from "../utils/db.server";
 
+// Find attendance by userId, startDate, endDate, page, and perPage
 const findFilteredAttendance = async (
   userId: string | undefined, 
   startDate: string | undefined,
@@ -20,7 +21,18 @@ const findFilteredAttendance = async (
       date: 'desc'
     }
   });
+
   return ret;
 };
 
-export { findFilteredAttendance };
+const findOneAttendance = async (attendanceId: string) => {
+  const ret = await db.attendance.findUnique({
+    where: {
+      id: attendanceId
+    }
+  })
+
+  return ret;
+}
+
+export { findFilteredAttendance, findOneAttendance };
