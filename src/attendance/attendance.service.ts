@@ -1,3 +1,4 @@
+import { NotFoundError } from "../class/Error";
 import { findAllAttendance, findOneAttendance } from "./attendance.repository";
 
 /**
@@ -23,9 +24,20 @@ const filterAttendances = async (
   return attendance;
 };
 
-const getOneAttendance = async (attendanceId: string) => {
+/**
+ * Get attendance details
+ * 
+ * @description Find attendance details by id
+ * @returns Attendance
+ */
+const getAttendanceDetails = async (attendanceId: string) => {
   const attendance = await findOneAttendance(attendanceId);
-  return attendance
+  
+  if (!attendanceId) {
+    throw new NotFoundError("Attendance not found");
+  }
+
+  return attendance;
 }
 
-export { filterAttendances, getOneAttendance };
+export { filterAttendances, getAttendanceDetails };

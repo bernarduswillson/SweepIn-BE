@@ -25,6 +25,7 @@ const findAllAttendance = async (
   return ret;
 };
 
+// Find unique attendance by id  
 const findOneAttendance = async (attendanceId: string) => {
   const ret = await db.attendance.findUnique({
     where: {

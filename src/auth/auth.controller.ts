@@ -17,7 +17,9 @@ const route = express.Router();
 route.post('/login', async (req: Request, res: Response) => {  
   try {
     const { email } = req.body;
+
     const credentials = await verifyUserByEmail(email);
+    
     return res.status(200).json({
       message: 'Login successful',
       data: credentials

@@ -1,6 +1,7 @@
 import express from "express";
+import { responseError } from "../class/Error";
 
-import { filterAttendances, getOneAttendance } from "./attendance.service";
+import { filterAttendances, getAttendanceDetails } from "./attendance.service";
 
 const route = express.Router();
 
@@ -19,7 +20,6 @@ route.get("/", async (req, res) => {
   try {
     const { user_id, start_date, end_date, page, per_page } = req.query;
 
-    // Get and filter attendance
     const attendances = await filterAttendances(
       user_id as string, 
       start_date as string,
@@ -35,30 +35,22 @@ route.get("/", async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error",
-    });
+    responseError(error, res);
   }
 });
 
 /**
- * GET
- * /attendance/:attendanceId
- * params: attendanceId
+ * @method GET /attendance/:attendanceId
+ * @param {string} attendanceId
+ * @returns attendance
+ * 
+ * @example http://{{base_url}}/attendance/:attendanceId
  */
 route.get('/:attendanceId', async (req, res) => {
   try {
     const attendanceId = req.params.attendanceId;
 
-    // Get one attendance
-    const attendance = await getOneAttendance(attendanceId as string);
-    
-    // Check if attendance id exists
-    if (!attendance) {
-      return res.status(404).json({
-        message: "Attendance not found",
-      });
-    } 
+    const attendance = await getAttendanceDetails(attendanceId as string);
 
     return res.status(200).json({
       message: "Get one attendance successful",
