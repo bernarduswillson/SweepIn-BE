@@ -1,7 +1,7 @@
 import express from "express"
 import type { Request, Response } from "express"
 import multer from "multer"
-import { getUserByName } from "../auth/auth.service"
+import { getUserByName } from "../auth/auth.repository"
 import { getHistory, getHistoryById, postHistory } from "./history.service"
 import { uploadFile } from "../utils/firestore"
 
