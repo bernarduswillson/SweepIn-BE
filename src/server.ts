@@ -20,8 +20,8 @@ app.use(express.static("static"))
 app.use(express.json())
 
 app.use(authController)
-// app.use("/api", historyRoutes)
-// app.use("/api", attendanceRoutes)
+app.use("/api", historyRoutes)
+app.use("/api", attendanceRoutes)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running on port ${PORT}`)

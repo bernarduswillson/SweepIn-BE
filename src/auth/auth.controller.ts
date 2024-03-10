@@ -6,6 +6,11 @@ import { getUser } from "./auth.repository";
 
 export const authController = express.Router();
 
+/**
+ * POST
+ * /login 
+ * body: email 
+ * */ 
 authController.post('/login', async (req: Request, res: Response) => {  
   try {
     const { email } = req.body;
