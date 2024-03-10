@@ -14,33 +14,43 @@ datasource db {
 }
 
 model User {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  email    String     @unique
-  name     String     @unique
-  role     Role       @default(USER)
-  Activity Activity[]
+  id       String       @id @default(auto()) @map("_id") @db.ObjectId
+  email    String       @unique
+  name     String       @unique
+  role     Role         @default(USER)
+  Activity Attendance[]
   History  History[]
 }
 
-model Log {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  date          DateTime  @default(now())
-  documentation String
-  latitude      Float
-  longitude     Float
-  ActivityStart Activity? @relation("ActivityStartLog")
-  ActivityEnd   Activity? @relation("ActivityEndLog")
+model StartLog {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime     @default(now())
+  image      String
+  latitude   Float
+  longitude  Float
+  Attendance Attendance[]
 }
 
-model Activity {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @map("_userId") @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now())
-  startLogId String?  @unique @map("_startLogId") @db.ObjectId
-  startLog   Log?     @relation(fields: [startLogId], references: [id], name: "ActivityStartLog")
-  endLogId   String?  @unique @map("_endLogId") @db.ObjectId
-  endLog     Log?     @relation(fields: [endLogId], references: [id], name: "ActivityEndLog")
+model EndLog {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  date       DateTime     @default(now())
+  image      String
+  latitude   Float
+  longitude  Float
+  Attendance Attendance[]
+}
+
+model Attendance {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @map("_userId") @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  date       DateTime  @default(now())
+  startLogId String?   @unique @db.ObjectId
+  startLog   StartLog? @relation(fields: [startLogId], references: [id])
+  endLogId   String?   @db.ObjectId
+  endLog     EndLog?   @relation(fields: [endLogId], references: [id])
+
+  @@unique([startLogId, endLogId])
 }
 
 model History {
