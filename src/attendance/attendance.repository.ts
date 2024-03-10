@@ -16,6 +16,9 @@ const findFilteredAttendance = async (
     },
     skip: (page - 1) * perPage,
     take: perPage,
+    orderBy: {
+      date: 'desc'
+    }
   });
   return ret;
 };
