@@ -30,8 +30,18 @@ const findOneAttendance = async (attendanceId: string) => {
   const ret = await db.attendance.findUnique({
     where: {
       id: attendanceId
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      startLog: true,
+      endLog: true
     }
-  })
+  });
 
   return ret;
 }
