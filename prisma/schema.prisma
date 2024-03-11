@@ -14,12 +14,12 @@ datasource db {
 }
 
 model User {
-  id       String       @id @default(auto()) @map("_id") @db.ObjectId
-  email    String       @unique
-  name     String       @unique
-  role     Role         @default(USER)
-  Activity Attendance[]
-  History  History[]
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  email      String       @unique
+  name       String       @unique
+  role       Role         @default(USER)
+  attendance Attendance[]
+  report     Report[]
 }
 
 model StartLog {
@@ -28,7 +28,7 @@ model StartLog {
   image      String
   latitude   Float
   longitude  Float
-  Attendance Attendance[]
+  attendance Attendance[]
 }
 
 model EndLog {
@@ -37,7 +37,7 @@ model EndLog {
   image      String
   latitude   Float
   longitude  Float
-  Attendance Attendance[]
+  attendance Attendance[]
 }
 
 model Attendance {
@@ -53,14 +53,14 @@ model Attendance {
   @@unique([startLogId, endLogId])
 }
 
-model History {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String   @map("_userId") @db.ObjectId
-  user          User     @relation(fields: [userId], references: [id])
-  date          DateTime @default(now())
-  status        Status   @default(WAITING)
-  description   String?
-  documentation String[]
+model Report {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @map("_userId") @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime @default(now())
+  status      Status   @default(WAITING)
+  description String?
+  images      String[]
 }
 
 enum Role {
@@ -69,7 +69,7 @@ enum Role {
 }
 
 enum Status {
-  ACCEPTED
-  REJECTED
   WAITING
+  REJECTED
+  ACCEPTED
 }

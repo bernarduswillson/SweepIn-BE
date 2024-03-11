@@ -1,4 +1,5 @@
 import express from "express";
+import type { Request, Response } from "express";
 import { responseError } from "../class/Error";
 
 import { filterAttendances, getAttendanceDetails } from "./attendance.service";
@@ -16,7 +17,7 @@ const route = express.Router();
  * 
  * @example http://{{base_url}}/attendance?user_id=:userId&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
-route.get("/", async (req, res) => {
+route.get("/", async (req: Request, res: Response) => {
   try {
     const { user_id, start_date, end_date, page, per_page } = req.query;
 
@@ -44,7 +45,7 @@ route.get("/", async (req, res) => {
  * 
  * @example http://{{base_url}}/attendance/:attendanceId
  */
-route.get('/:attendanceId', async (req, res) => {
+route.get('/:attendanceId', async (req: Request, res: Response) => {
   try {
     const attendanceId = req.params.attendanceId;
 

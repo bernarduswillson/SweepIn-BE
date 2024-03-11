@@ -5,7 +5,7 @@ import { findAllAttendance, findOneAttendance } from "./attendance.repository";
  * Filter attendances
  * 
  * @description Filter attendances by userId, startDate, endDate then slice it into pages
- * @returns Attendances
+ * @returns Attendance[]
  */
 const filterAttendances = async (
   userId: string | undefined, 
@@ -38,12 +38,5 @@ const getAttendanceDetails = async (attendanceId: string) => {
     throw new NotFoundError("Attendance not found");
   }
 }
-
-/**
- * Get attendance details
- * 
- * @description Find attendance details by id
- * @returns Attendance
- */
 
 export { filterAttendances, getAttendanceDetails };
