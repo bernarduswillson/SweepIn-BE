@@ -1,10 +1,10 @@
 import express from "express";
 import multer from "multer"
 import type { Request, Response } from "express";
+import { Status } from ".prisma/client";
 import { responseError } from "../class/Error";
 
 import { filterReports, submitReport, getReportDetails } from './report.service';
-import { Status } from ".prisma/client";
 
 const route = express.Router();
 const upload = multer()
@@ -46,6 +46,7 @@ route.get('/', async (req: Request, res: Response) => {
 /**
  * @method GET /report/:reportId
  * @param {string} report_id
+ * @returns report
  * 
  * @example http://{{base_url}}/report/
  */
@@ -70,6 +71,7 @@ route.get('/:reportId', async (req, res) => {
  * @param {string} user_id
  * @param {string} images
  * @param {string} description
+ * @returns reportId
  * 
  * @example http://{{base_url}}/report/
  */
