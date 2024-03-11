@@ -1,10 +1,9 @@
 import express from "express";
 import multer from "multer"
 import type { Request, Response } from "express";
-import { uploadFile } from "../utils/firestore"
 import { responseError } from "../class/Error";
 
-import { filterReports, submitReport } from './report.service';
+import { filterReports, submitReport, getReportDetails } from './report.service';
 import { Status } from ".prisma/client";
 
 const route = express.Router();
@@ -45,7 +44,29 @@ route.get('/', async (req: Request, res: Response) => {
 });
 
 /**
- * @method POST /repor
+ * @method GET /report/:reportId
+ * @param {string} report_id
+ * 
+ * @example http://{{base_url}}/report/
+ */
+route.get('/:reportId', async (req, res) => {
+  try {
+    const reportId = req.params.reportId;
+
+    const reportDetails = await getReportDetails(reportId as string);
+
+    return res.status(200).json({
+      message: "Get report details successful",
+      data: reportDetails
+    })
+
+  } catch (error) {
+    responseError(error, res);
+  }
+})
+
+/**
+ * @method POST /report
  * @param {string} user_id
  * @param {string} images
  * @param {string} description

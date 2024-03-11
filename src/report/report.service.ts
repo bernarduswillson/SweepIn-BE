@@ -1,7 +1,8 @@
 import { Status } from '.prisma/client';
 import { uploadFile } from '../utils/firestore';
 
-import { findAllReports, createReport } from './report.repository';
+import { findAllReports, createReport, findOneReport } from './report.repository';
+import { NotFoundError } from '../class/Error';
 
 /**
  * Filter reports
@@ -28,6 +29,15 @@ const filterReports = async (
 
   return reports;
 };
+
+const getReportDetails = async (reportId: string) => {
+  try {
+    const report = await findOneReport(reportId) 
+    return report;
+  } catch (error) {
+    throw new NotFoundError("Report not found")
+  }
+}
 
 /**
  * Submit report
@@ -63,4 +73,4 @@ const submitReport = async (
   return reportId.id;
 }
 
-export { filterReports, submitReport };
+export { filterReports, getReportDetails, submitReport };

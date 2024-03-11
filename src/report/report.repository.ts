@@ -28,6 +28,16 @@ const findAllReports = async (
   return ret;
 };
 
+// Find one unique report by id
+const findOneReport = async (reportId: string) => {
+  const ret = await db.report.findUnique({
+    where: {
+      id: reportId
+    }
+  });
+  return ret;
+}
+
 // Create new report
 const createReport = async (
   userId: string,
@@ -44,4 +54,4 @@ const createReport = async (
   return ret;
 };
 
-export { findAllReports, createReport };
+export { findAllReports, findOneReport, createReport };
