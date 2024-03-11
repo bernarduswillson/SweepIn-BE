@@ -1,5 +1,5 @@
 import { NotFoundError } from "../class/Error";
-import { findAllAttendance, findOneAttendance } from "./attendance.repository";
+import { createAttendance, findAllAttendance, findOneAttendance } from "./attendance.repository";
 
 /**
  * Filter attendances
@@ -39,4 +39,17 @@ const getAttendanceDetails = async (attendanceId: string) => {
   }
 }
 
-export { filterAttendances, getAttendanceDetails };
+/**
+ * Generate attendance
+ * 
+ * @description Create new attendance 
+ * @returns AttendanceId
+ */
+const generateAttendance = async (userId: string, date: string) => {
+  console.log('Before call create Attendance');
+  const attendance = await createAttendance(userId, date);
+  console.log('After call create Attendance');
+  return attendance.id;
+}
+
+export { filterAttendances, getAttendanceDetails, generateAttendance };
