@@ -1,6 +1,7 @@
 import { Status } from ".prisma/client";
 import { db } from "../utils/db.server";
 
+// Find report by userId, status, startDate, endDate, page, and perPage then sort by date 
 const findAllReports = async (
   userId: string | undefined,
   startDate: string | undefined,
@@ -27,4 +28,20 @@ const findAllReports = async (
   return ret;
 };
 
-export { findAllReports }
+// Create new report
+const createReport = async (
+  userId: string,
+  images: string[],
+  description: string | undefined
+) => {
+  const ret = await db.report.create({
+    data: {
+      userId,
+      images,
+      description
+    }
+  })
+  return ret;
+};
+
+export { findAllReports, createReport };

@@ -1,11 +1,14 @@
 import express from "express";
+import multer from "multer"
 import type { Request, Response } from "express";
+import { uploadFile } from "../utils/firestore"
 import { responseError } from "../class/Error";
 
-import { filterReports } from './report.service';
+import { filterReports, submitReport } from './report.service';
 import { Status } from ".prisma/client";
 
 const route = express.Router();
+const upload = multer()
 
 /**
  * @method GET /reports
@@ -17,7 +20,7 @@ const route = express.Router();
  * @param {string} per_page - The number of data in a page 
  * @returns reports
  * 
- * @example http://{{base_url}}/reports?user_id=:userId&status=:status&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
+ * @example http://{{base_url}}/report?user_id=:userId&status=:status&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
 route.get('/', async (req: Request, res: Response) => {
   try {
@@ -39,6 +42,36 @@ route.get('/', async (req: Request, res: Response) => {
   } catch (error) {
     responseError(error, res);
   }
-})
+});
+
+/**
+ * @method POST /repor
+ * @param {string} user_id
+ * @param {string} images
+ * @param {string} description
+ * 
+ * @example http://{{base_url}}/report/
+ */
+route.post('/', upload.any(), async (req: Request, res: Response) => {
+  try {
+    const { user_id, description } = req.body;
+    const { files } = req;
+
+    const postReport = await submitReport(
+      user_id as string,
+      files as Express.Multer.File[],
+      description as string
+    )
+
+    return res.status(200).json({
+      message: "Submit post successful",
+      data: {
+        id: postReport
+      }
+    });
+  } catch (error) {
+    responseError(error, res);
+  }
+});
 
 export default route;

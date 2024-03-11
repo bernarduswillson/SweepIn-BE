@@ -24,6 +24,7 @@ const responseError = (e: any, res: Response) => {
       message: e.message
     })
   }
+  console.error(e);
   return res.status(500).json({
     message: 'Internal server error'
   })
