@@ -9,7 +9,7 @@ const route = express.Router();
 const upload = multer();
 
 /**
- * @method POST /log/startlog
+ * @method POST /log
  * @param {string} date
  * @param {string} image
  * @param {string} latitude
@@ -18,26 +18,32 @@ const upload = multer();
  * 
  * @example http://{{base_url}}/report?user_id=:userId&status=:status&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
-route.post('/startlog', upload.any(), async (req: Request, res: Response) => {
+route.post('/', upload.any(), async (req: Request, res: Response) => {
   try {
-    const { date, image, latitude, longitude } = req.body;
+    const { userId, attendanceId, date, latitude, longitude } = req.body;
+    const { files } = req;
 
-    const logId = await submitLog(
+    console.log("Post log route called");
+
+    const createdId = await submitLog(
+      attendanceId as string,
+      userId as string,
       date as string,
-      image as string,
-      latitude as number,
-      longitude as number
+      files as Express.Multer.File[],
+      latitude as string,
+      longitude as string,
     );
 
     return res.status(200).json({
       message: "Submit log successful",
       data: {
-        logId
+        attendanceId: createdId.attendanceId,
+        logId: createdId.id
       }
-    })
+    });
   } catch (error) {
     responseError(error, res);
   }
-})
+});
 
 export default route;

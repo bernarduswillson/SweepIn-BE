@@ -1,3 +1,4 @@
+import { UnauthorizedError } from "../class/Error";
 import { db } from "../utils/db.server";
 
 // Find attendance by userId, startDate, endDate, page, and perPage then sort by date 
@@ -46,4 +47,17 @@ const findOneAttendance = async (attendanceId: string) => {
   return ret;
 }
 
-export { findAllAttendance, findOneAttendance };
+// Create attendance
+const createAttendance = async (userId: string, date: string) => {
+  console.log("Before create attendance query");
+  const ret = await db.attendance.create({
+    data: {
+      userId,
+      date
+    }
+  })
+  console.log("After create attendance query");
+  return ret;
+}
+
+export { findAllAttendance, findOneAttendance, createAttendance };
