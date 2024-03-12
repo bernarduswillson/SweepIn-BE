@@ -9,6 +9,13 @@ const findAllAttendance = async (
   page: number, 
   perPage: number) => {
   const ret = await db.attendance.findMany({
+    select: {
+      id: true,
+      userId: true,
+      date: true,
+      startLog: true,
+      endLog: true
+    },
     where: {
       userId,
       date: {
@@ -49,14 +56,12 @@ const findOneAttendance = async (attendanceId: string) => {
 
 // Create attendance
 const createAttendance = async (userId: string, date: string) => {
-  console.log("Before create attendance query");
   const ret = await db.attendance.create({
     data: {
       userId,
       date
     }
   })
-  console.log("After create attendance query");
   return ret;
 }
 

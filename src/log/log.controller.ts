@@ -23,8 +23,6 @@ route.post('/', upload.any(), async (req: Request, res: Response) => {
     const { userId, attendanceId, date, latitude, longitude } = req.body;
     const { files } = req;
 
-    console.log("Post log route called");
-
     const createdId = await submitLog(
       attendanceId as string,
       userId as string,

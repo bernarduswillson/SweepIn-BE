@@ -28,9 +28,7 @@ const submitStartLog = async (
   image: string,
   latitude: string,
   longitude: string) => {
-    console.log('Before call generate Attendance');
     const attendanceId = await generateAttendance(userId, date);
-    console.log('After call generate Attendance');
     const { id } = await createLog(date, image, parseFloat(latitude), parseFloat(longitude), attendanceId, undefined);
     return { attendanceId, id };
   }
@@ -42,7 +40,6 @@ const submitEndLog = async (
   latitude: string,
   longitude: string) => {
     // TODO: Check if attendance exists
-    console.log('Checking attendance id...');
     const { id } = await createLog(date, image, parseFloat(latitude), parseFloat(longitude), undefined, attendanceId);
     return { attendanceId, id }
   }

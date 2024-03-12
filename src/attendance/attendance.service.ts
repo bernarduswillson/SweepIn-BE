@@ -46,9 +46,7 @@ const getAttendanceDetails = async (attendanceId: string) => {
  * @returns AttendanceId
  */
 const generateAttendance = async (userId: string, date: string) => {
-  console.log('Before call create Attendance');
   const attendance = await createAttendance(userId, date);
-  console.log('After call create Attendance');
   return attendance.id;
 }
 
