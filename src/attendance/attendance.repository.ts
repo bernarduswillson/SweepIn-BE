@@ -1,39 +1,48 @@
-import { UnauthorizedError } from "../class/Error";
-import { db } from "../utils/db.server";
+import { UnauthorizedError } from "../class/Error"
+import { db } from "../utils/db.server"
 
-// Find attendance by userId, startDate, endDate, page, and perPage then sort by date 
+// Find attendance by userId, startDate, endDate, page, and perPage then sort by date
 const findAllAttendance = async (
-  userId: string | undefined, 
+  userId: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
-  page: number, 
-  perPage: number) => {
+  page: number,
+  perPage: number
+) => {
   const ret = await db.attendance.findMany({
     select: {
       id: true,
       userId: true,
       date: true,
-      startLog: true,
-      endLog: true
+      startLog: {
+        select: {
+          id: true
+        }
+      },
+      endLog: {
+        select: {
+          id: true
+        }
+      }
     },
     where: {
       userId,
       date: {
         gte: startDate ? new Date(startDate).toISOString() : undefined,
         lte: endDate ? new Date(endDate).toISOString() : undefined
-      },
+      }
     },
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
-      date: 'desc'
+      date: "desc"
     }
-  });
+  })
 
-  return ret;
-};
+  return ret
+}
 
-// Find unique attendance by id  
+// Find unique attendance by id
 const findOneAttendance = async (attendanceId: string) => {
   const ret = await db.attendance.findUnique({
     where: {
@@ -49,20 +58,19 @@ const findOneAttendance = async (attendanceId: string) => {
       startLog: true,
       endLog: true
     }
-  });
+  })
 
-  return ret;
+  return ret
 }
 
 // Create attendance
-const createAttendance = async (userId: string, date: string) => {
+const createAttendance = async (userId: string) => {
   const ret = await db.attendance.create({
     data: {
-      userId,
-      date
+      userId
     }
   })
-  return ret;
+  return ret
 }
 
-export { findAllAttendance, findOneAttendance, createAttendance };
+export { findAllAttendance, findOneAttendance, createAttendance }
