@@ -1,6 +1,6 @@
 import express from "express"
 import type { Request, Response } from "express"
-import { InvalidAttributeError, responseError } from "../class/Error"
+import { responseError } from "../class/Error"
 
 import { verifyUserByEmail, createUser } from "./auth.service"
 
@@ -42,20 +42,6 @@ route.post("/login", async (req: Request, res: Response) => {
 route.post("/register", async (req: Request, res: Response) => {
   try {
     const { email, name, role, location } = req.body
-
-    // Verify the role and location match the enum
-    if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
-      throw new InvalidAttributeError("Invalid role")
-    }
-
-    if (
-      location !== "GANESHA" &&
-      location !== "JATINANGOR" &&
-      location !== "CIREBON" &&
-      location !== "JAKARTA"
-    ) {
-      throw new InvalidAttributeError("Invalid location")
-    }
 
     const user = await createUser(email, name, role, location)
 

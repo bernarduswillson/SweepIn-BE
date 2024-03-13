@@ -1,7 +1,7 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { Role, Location } from "@prisma/client"
 import { getUserByEmail, generateUser } from "./auth.repository"
+import { InvalidAttributeError } from "../class/Error"
 
 /**
  * Verify user by email
@@ -29,9 +29,23 @@ const verifyUserByEmail = async (email: string) => {
 const createUser = async (
   email: string,
   name: string,
-  role: Role,
-  location: Location
+  role: string,
+  location: string
 ) => {
+  // Verify the role and location match the enum
+  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
+    throw new InvalidAttributeError("Invalid role")
+  }
+
+  if (
+    location !== "GANESHA" &&
+    location !== "JATINANGOR" &&
+    location !== "CIREBON" &&
+    location !== "JAKARTA"
+  ) {
+    throw new InvalidAttributeError("Invalid location")
+  }
+
   const user = await generateUser(email, name, role, location)
 
   if (!user) {
