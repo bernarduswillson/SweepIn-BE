@@ -1,6 +1,7 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { getUserByEmail } from "./auth.repository"
+import { Role, Location } from "@prisma/client"
+import { getUserByEmail, generateUser } from "./auth.repository"
 
 /**
  * Verify user by email
@@ -19,4 +20,25 @@ const verifyUserByEmail = async (email: string) => {
   return user
 }
 
-export { verifyUserByEmail }
+/**
+ * Create user
+ *
+ * @description create a new user using email, name, role, and location
+ * @returns User's data
+ */
+const createUser = async (
+  email: string,
+  name: string,
+  role: Role,
+  location: Location
+) => {
+  const user = await generateUser(email, name, role, location)
+
+  if (!user) {
+    throw new Error("Error creating user")
+  }
+
+  return user
+}
+
+export { verifyUserByEmail, createUser }

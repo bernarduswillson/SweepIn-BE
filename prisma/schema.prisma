@@ -17,7 +17,8 @@ model User {
   id         String       @id @default(auto()) @map("_id") @db.ObjectId
   email      String       @unique
   name       String       @unique
-  role       Role         @default(USER)
+  role       Role
+  location   Location
   attendance Attendance[]
   report     Report[]
 }
@@ -56,8 +57,16 @@ model Report {
 }
 
 enum Role {
-  USER
+  CLEANER
+  SECURITY
   ADMIN
+}
+
+enum Location {
+  GANESHA
+  JATINANGOR
+  CIREBON
+  JAKARTA
 }
 
 enum Status {
