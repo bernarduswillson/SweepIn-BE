@@ -18,8 +18,21 @@ class NotFoundError extends Error {
   }
 }
 
+class InvalidAttributeError extends Error {
+  code: number = 400
+
+  constructor(message: string) {
+    super(message)
+    this.name = "InvalidAttributeError"
+  }
+}
+
 const responseError = (e: any, res: Response) => {
-  if (e instanceof UnauthorizedError || e instanceof NotFoundError) {
+  if (
+    e instanceof UnauthorizedError ||
+    e instanceof NotFoundError ||
+    e instanceof InvalidAttributeError
+  ) {
     return res.status(e.code).json({
       message: e.message
     })
@@ -30,4 +43,9 @@ const responseError = (e: any, res: Response) => {
   })
 }
 
-export { UnauthorizedError, NotFoundError, responseError }
+export {
+  UnauthorizedError,
+  NotFoundError,
+  InvalidAttributeError,
+  responseError
+}
