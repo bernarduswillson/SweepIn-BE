@@ -1,12 +1,16 @@
-import { Status } from '.prisma/client';
-import { uploadFile } from '../utils/firestore';
+import { Status } from ".prisma/client"
+import { uploadFile } from "../utils/firestore"
 
-import { findAllReports, createReport, findOneReport } from './report.repository';
-import { NotFoundError } from '../class/Error';
+import {
+  findAllReports,
+  createReport,
+  findOneReport
+} from "./report.repository"
+import { NotFoundError } from "../class/Error"
 
 /**
  * Filter reports
- * 
+ *
  * @description Filter attendances by userId, status, startDate, endDate then slice it into pages
  * @returns Report[]
  */
@@ -24,16 +28,16 @@ const filterReports = async (
     endDate,
     status,
     parseInt(page),
-    parseInt(perPage),
+    parseInt(perPage)
   )
 
-  return reports;
-};
+  return reports
+}
 
 const getReportDetails = async (reportId: string) => {
   try {
-    const report = await findOneReport(reportId) 
-    return report;
+    const report = await findOneReport(reportId)
+    return report
   } catch (error) {
     throw new NotFoundError("Report not found")
   }
@@ -41,7 +45,7 @@ const getReportDetails = async (reportId: string) => {
 
 /**
  * Submit report
- * 
+ *
  * @description Create new report
  * @returns ReportId
  */
@@ -51,7 +55,7 @@ const submitReport = async (
   description: string | undefined
 ) => {
   // TODO: Validate userId
-  
+
   let documentation: string[] = []
 
   if (Array.isArray(images)) {
@@ -64,13 +68,9 @@ const submitReport = async (
     documentation.push(url)
   }
 
-  const reportId = await createReport(
-    userId,
-    documentation,
-    description
-  );
+  const reportId = await createReport(userId, documentation, description)
 
-  return reportId.id;
+  return reportId.id
 }
 
-export { filterReports, getReportDetails, submitReport };
+export { filterReports, getReportDetails, submitReport }

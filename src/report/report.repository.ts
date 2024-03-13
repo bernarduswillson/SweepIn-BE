@@ -1,7 +1,7 @@
-import { Status } from ".prisma/client";
-import { db } from "../utils/db.server";
+import { Status } from ".prisma/client"
+import { db } from "../utils/db.server"
 
-// Find report by userId, status, startDate, endDate, page, and perPage then sort by date 
+// Find report by userId, status, startDate, endDate, page, and perPage then sort by date
 const findAllReports = async (
   userId: string | undefined,
   startDate: string | undefined,
@@ -22,20 +22,28 @@ const findAllReports = async (
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
-      date: 'desc'
+      date: "desc"
     }
-  });
-  return ret;
-};
+  })
+  return ret
+}
 
 // Find one unique report by id
 const findOneReport = async (reportId: string) => {
   const ret = await db.report.findUnique({
     where: {
       id: reportId
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
     }
-  });
-  return ret;
+  })
+  return ret
 }
 
 // Create new report
@@ -51,7 +59,7 @@ const createReport = async (
       description
     }
   })
-  return ret;
-};
+  return ret
+}
 
-export { findAllReports, findOneReport, createReport };
+export { findAllReports, findOneReport, createReport }

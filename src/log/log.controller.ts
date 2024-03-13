@@ -1,12 +1,12 @@
-import express from "express";
+import express from "express"
 import multer from "multer"
-import type { Request, Response } from "express";
-import { responseError } from "../class/Error";
+import type { Request, Response } from "express"
+import { responseError } from "../class/Error"
 
-import { submitLog } from "./log.service";
+import { submitLog } from "./log.service"
 
-const route = express.Router();
-const upload = multer();
+const route = express.Router()
+const upload = multer()
 
 /**
  * @method POST /log
@@ -15,13 +15,13 @@ const upload = multer();
  * @param {string} latitude
  * @param {string} longitude
  * @returns logId
- * 
+ *
  * @example http://{{base_url}}/report?user_id=:userId&status=:status&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
-route.post('/', upload.any(), async (req: Request, res: Response) => {
+route.post("/", upload.any(), async (req: Request, res: Response) => {
   try {
-    const { userId, attendanceId, date, latitude, longitude } = req.body;
-    const { files } = req;
+    const { userId, attendanceId, date, latitude, longitude } = req.body
+    const { files } = req
 
     const createdId = await submitLog(
       attendanceId as string,
@@ -29,8 +29,8 @@ route.post('/', upload.any(), async (req: Request, res: Response) => {
       date as string,
       files as Express.Multer.File[],
       latitude as string,
-      longitude as string,
-    );
+      longitude as string
+    )
 
     return res.status(200).json({
       message: "Submit log successful",
@@ -38,10 +38,10 @@ route.post('/', upload.any(), async (req: Request, res: Response) => {
         attendanceId: createdId.attendanceId,
         logId: createdId.id
       }
-    });
+    })
   } catch (error) {
-    responseError(error, res);
+    responseError(error, res)
   }
-});
+})
 
-export default route;
+export default route

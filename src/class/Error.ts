@@ -1,11 +1,11 @@
-import type { Response } from "express";
+import type { Response } from "express"
 
 class UnauthorizedError extends Error {
-  code: number = 401;
+  code: number = 401
 
   constructor(message: string) {
-    super(message);
-    this.name = "UnauthorizedError";
+    super(message)
+    this.name = "UnauthorizedError"
   }
 }
 
@@ -13,8 +13,8 @@ class NotFoundError extends Error {
   code: number = 404
 
   constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
+    super(message)
+    this.name = "NotFoundError"
   }
 }
 
@@ -24,14 +24,10 @@ const responseError = (e: any, res: Response) => {
       message: e.message
     })
   }
-  console.error(e);
+  console.error(e)
   return res.status(500).json({
-    message: 'Internal server error'
+    message: "Internal server error"
   })
 }
 
-export {
-  UnauthorizedError,
-  NotFoundError,
-  responseError
-};
+export { UnauthorizedError, NotFoundError, responseError }

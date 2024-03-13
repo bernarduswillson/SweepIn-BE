@@ -1,4 +1,4 @@
-import { db } from "../utils/db.server";
+import { db } from "../utils/db.server"
 
 const createLog = async (
   date: string,
@@ -17,9 +17,9 @@ const createLog = async (
       attendanceStartId,
       attendanceEndId
     }
-  });
+  })
 
-  return ret;
+  return ret
 }
 
-export { createLog };
+export { createLog }
