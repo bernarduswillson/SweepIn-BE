@@ -7,6 +7,7 @@ import authController from "./auth/auth.controller"
 import attendanceController from "./attendance/attendance.controller"
 import reportController from "./report/report.controller"
 import logController from "./log/log.controller"
+import swaggerRoutes from "./swagger"
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.use(authController)
 app.use("/attendance", attendanceController)
 app.use("/report", reportController)
 app.use("/log", logController)
+app.use("/docs", swaggerRoutes)
 
 app.listen(PORT, () => {
   console.log(`⚡️[server]: Server is running on port ${PORT}`)
