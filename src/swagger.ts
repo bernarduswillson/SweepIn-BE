@@ -14,10 +14,10 @@ const options = {
     },
   },
   apis: [
-    './src/attendance/*.swagger.ts'
-    // './src/auth/*.swagger.ts',
-    // './src/log/*.swagger.ts',
-    // './src/report/*.swagger.ts'
+    './src/attendance/*.swagger.ts',
+    './src/auth/*.swagger.ts',
+    './src/log/*.swagger.ts',
+    './src/report/*.swagger.ts'
 ],
 };
 
