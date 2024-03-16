@@ -2,7 +2,12 @@ import express from "express"
 import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
-import { findAllUsers, verifyUserByEmail, createUser } from "./auth.service"
+import {
+  findAllUsers,
+  verifyUserByEmail,
+  createUser,
+  removeUser
+} from "./auth.service"
 
 const route = express.Router()
 
@@ -64,6 +69,29 @@ route.post("/register", async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "User created",
+      data: user
+    })
+  } catch (error: any) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method DELETE /user/:userId
+ * @param {string} userId - user's id
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.delete("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId
+
+    const user = await removeUser(userId)
+
+    return res.status(200).json({
+      message: "User deleted",
       data: user
     })
   } catch (error: any) {

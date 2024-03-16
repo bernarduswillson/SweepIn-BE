@@ -29,4 +29,12 @@ const generateUser = async (
   })
 }
 
-export { getAllUsers, getUserByEmail, generateUser }
+const deleteUserById = async (userId: string) => {
+  return await db.user.delete({
+    where: {
+      id: userId
+    }
+  })
+}
+
+export { getAllUsers, getUserByEmail, generateUser, deleteUserById }

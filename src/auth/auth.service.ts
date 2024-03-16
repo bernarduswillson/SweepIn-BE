@@ -1,6 +1,11 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { getAllUsers, getUserByEmail, generateUser } from "./auth.repository"
+import {
+  getAllUsers,
+  getUserByEmail,
+  generateUser,
+  deleteUserById
+} from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
 
 /**
@@ -62,6 +67,11 @@ const createUser = async (
   ) {
     throw new InvalidAttributeError("Invalid location")
   }
+  const userExists = await getUserByEmail(email)
+
+  if (userExists) {
+    throw new Error("User already exists")
+  }
 
   const user = await generateUser(email, name, role, location)
 
@@ -72,4 +82,14 @@ const createUser = async (
   return user
 }
 
-export { findAllUsers, verifyUserByEmail, createUser }
+/**
+ * Delete user
+ *
+ * @description delete a user by id
+ * @returns User's data
+ */
+const removeUser = async (userId: string) => {
+  return await deleteUserById(userId)
+}
+
+export { findAllUsers, verifyUserByEmail, createUser, removeUser }
