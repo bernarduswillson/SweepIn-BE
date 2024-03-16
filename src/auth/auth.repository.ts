@@ -21,6 +21,22 @@ const getUsers = async (
   })
 }
 
+const countUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined
+) => {
+  return await db.user.count({
+    where: {
+      name: {
+        contains: name
+      },
+      role: role as Role,
+      location: location as Location
+    }
+  })
+}
+
 const getUserByEmail = async (email: string) => {
   return await db.user.findFirst({
     where: {
@@ -45,4 +61,4 @@ const generateUser = async (
   })
 }
 
-export { getUsers, getUserByEmail, generateUser }
+export { getUsers, getUserByEmail, generateUser, countUsers }
