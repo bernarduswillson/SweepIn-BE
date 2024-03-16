@@ -5,7 +5,7 @@ stages:
 
 before_script:
   - echo "Before script started..."
-  - echo $BE_VAR >> .env
+  - cp ${BE_VAR} .env
   - echo "Before script completed successfully!"
 
 install_dependencies:
