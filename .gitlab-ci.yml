@@ -1,5 +1,6 @@
 stages:
   - install_dependencies
+  - prototype_scheme
   - test
 
 install_dependencies:
@@ -8,6 +9,13 @@ install_dependencies:
     - echo "Installing dependencies..."
     - npm install
     - echo "Dependencies installed"
+
+prototype_scheme:
+  stage: prototype_scheme
+  script:
+    - echo "Prototyping prisma scheme..."
+    - npx prisma db push
+    - echo "Scheme built successfully!"
 
 test:
   stage: test
