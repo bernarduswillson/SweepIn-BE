@@ -2,7 +2,12 @@ import express from "express"
 import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
-import { findUsers, verifyUserByEmail, createUser } from "./auth.service"
+import {
+  findUsers,
+  verifyUserByEmail,
+  createUser,
+  countFilteredUsers
+} from "./auth.service"
 
 const route = express.Router()
 
@@ -31,9 +36,16 @@ route.get("/user", async (req: Request, res: Response) => {
       per_page as string
     )
 
+    const count = await countFilteredUsers(
+      name as string,
+      role as string,
+      location as string
+    )
+
     return res.status(200).json({
       message: "Users fetched",
-      data: users
+      data: users,
+      count
     })
   } catch (error) {
     responseError(error, res)

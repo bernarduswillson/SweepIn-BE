@@ -1,6 +1,11 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { getUsers, getUserByEmail, generateUser } from "./auth.repository"
+import {
+  getUsers,
+  getUserByEmail,
+  generateUser,
+  countUsers
+} from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
 
 /**
@@ -30,6 +35,14 @@ const findUsers = async (
   }
 
   return users
+}
+
+const countFilteredUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined
+) => {
+  return await countUsers(name, role, location)
 }
 
 /**
@@ -84,4 +97,4 @@ const createUser = async (
   return user
 }
 
-export { findUsers, verifyUserByEmail, createUser }
+export { findUsers, verifyUserByEmail, createUser, countFilteredUsers }
