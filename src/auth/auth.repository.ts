@@ -1,6 +1,10 @@
 import { db } from "../utils/db.server"
 import { Role, Location } from "@prisma/client"
 
+const getAllUsers = async () => {
+  return await db.user.findMany()
+}
+
 const getUserByEmail = async (email: string) => {
   return await db.user.findFirst({
     where: {
@@ -25,4 +29,4 @@ const generateUser = async (
   })
 }
 
-export { getUserByEmail, generateUser }
+export { getAllUsers, getUserByEmail, generateUser }
