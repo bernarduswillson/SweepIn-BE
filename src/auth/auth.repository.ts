@@ -1,8 +1,24 @@
 import { db } from "../utils/db.server"
 import { Role, Location } from "@prisma/client"
 
-const getAllUsers = async () => {
-  return await db.user.findMany()
+const getUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  page: number,
+  perPage: number
+) => {
+  return await db.user.findMany({
+    where: {
+      name: {
+        contains: name
+      },
+      role: role as Role,
+      location: location as Location
+    },
+    skip: (page - 1) * perPage,
+    take: perPage
+  })
 }
 
 const getUserByEmail = async (email: string) => {
@@ -29,4 +45,4 @@ const generateUser = async (
   })
 }
 
-export { getAllUsers, getUserByEmail, generateUser }
+export { getUsers, getUserByEmail, generateUser }
