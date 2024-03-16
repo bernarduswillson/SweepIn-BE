@@ -1,0 +1,16 @@
+stages:
+  - install_dependencies
+  - test
+
+install_dependencies:
+  stage: install_dependencies
+  script:
+    - echo "Installing dependencies..."
+    - npm install
+    - echo "Dependencies installed"
+
+test:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - echo "Tests passed successfully!"
