@@ -2,9 +2,26 @@ import express from "express"
 import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
-import { verifyUserByEmail, createUser } from "./auth.service"
+import { findAllUsers, verifyUserByEmail, createUser } from "./auth.service"
 
 const route = express.Router()
+
+/**
+ * @method GET /user
+ * @returns all users
+ */
+route.get("/user", async (req: Request, res: Response) => {
+  try {
+    const users = await findAllUsers()
+
+    return res.status(200).json({
+      message: "Users fetched",
+      data: users
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
 
 /**
  * @method POST /login

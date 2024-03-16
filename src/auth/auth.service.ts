@@ -1,7 +1,24 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { getUserByEmail, generateUser } from "./auth.repository"
+import { getAllUsers, getUserByEmail, generateUser } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
+
+/**
+ * Get all users
+ *
+ * @description Get all users from the database
+ * @returns All users
+ */
+
+const findAllUsers = async () => {
+  const users = await getAllUsers()
+
+  if (!users) {
+    throw new Error("Error fetching users")
+  }
+
+  return users
+}
 
 /**
  * Verify user by email
@@ -55,4 +72,4 @@ const createUser = async (
   return user
 }
 
-export { verifyUserByEmail, createUser }
+export { findAllUsers, verifyUserByEmail, createUser }
