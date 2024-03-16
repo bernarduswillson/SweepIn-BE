@@ -1,6 +1,6 @@
 import { UnauthorizedError } from "../class/Error"
 
-import { getAllUsers, getUserByEmail, generateUser } from "./auth.repository"
+import { getUsers, getUserByEmail, generateUser } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
 
 /**
@@ -10,8 +10,20 @@ import { InvalidAttributeError } from "../class/Error"
  * @returns All users
  */
 
-const findAllUsers = async () => {
-  const users = await getAllUsers()
+const findUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  page: string,
+  perPage: string
+) => {
+  const users = await getUsers(
+    name,
+    role,
+    location,
+    parseInt(page),
+    parseInt(perPage)
+  )
 
   if (!users) {
     throw new Error("Error fetching users")
@@ -72,4 +84,4 @@ const createUser = async (
   return user
 }
 
-export { findAllUsers, verifyUserByEmail, createUser }
+export { findUsers, verifyUserByEmail, createUser }
