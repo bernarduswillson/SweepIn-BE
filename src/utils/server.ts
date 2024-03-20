@@ -6,7 +6,7 @@ import authController from "../auth/auth.controller"
 import attendanceController from "../attendance/attendance.controller"
 import reportController from "../report/report.controller"
 import logController from "../log/log.controller"
-import swaggerRoutes from "../swagger"
+import swaggerRoutes from "./swagger"
 
 export const createServer = () => {
   const app = express()
