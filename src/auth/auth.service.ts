@@ -4,7 +4,8 @@ import {
   getUsers,
   getUserByEmail,
   generateUser,
-  countUsers
+  countUsers,
+  deleteUserById
 } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
 
@@ -87,6 +88,11 @@ const createUser = async (
   ) {
     throw new InvalidAttributeError("Invalid location")
   }
+  const userExists = await getUserByEmail(email)
+
+  if (userExists) {
+    throw new Error("User already exists")
+  }
 
   const user = await generateUser(email, name, role, location)
 
@@ -97,4 +103,14 @@ const createUser = async (
   return user
 }
 
-export { findUsers, verifyUserByEmail, createUser, countFilteredUsers }
+/**
+ * Delete user
+ *
+ * @description delete a user by id
+ * @returns User's data
+ */
+const removeUser = async (userId: string) => {
+  return await deleteUserById(userId)
+}
+
+export { findUsers, verifyUserByEmail, createUser, countFilteredUsers, removeUser }

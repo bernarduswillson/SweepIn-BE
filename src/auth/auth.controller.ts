@@ -6,7 +6,8 @@ import {
   findUsers,
   verifyUserByEmail,
   createUser,
-  countFilteredUsers
+  countFilteredUsers,
+  removeUser
 } from "./auth.service"
 
 const route = express.Router()
@@ -93,6 +94,29 @@ route.post("/register", async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "User created",
+      data: user
+    })
+  } catch (error: any) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method DELETE /user/:userId
+ * @param {string} userId - user's id
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.delete("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId
+
+    const user = await removeUser(userId)
+
+    return res.status(200).json({
+      message: "User deleted",
       data: user
     })
   } catch (error: any) {

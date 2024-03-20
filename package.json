@@ -1,14 +1,14 @@
 {
   "name": "sweepin-be",
   "version": "1.0.0",
-  "description": "<p align=\"center\">\r   <img src=\"docs/class_diagram.jpg\" width=\"70%\" height=\"auto\">\r </p>",
-  "main": "server.ts",
+  "description": "SweepIn ITB",
+  "main": "index.ts",
   "prisma": {
     "seed": "node --require esbuild-register prisma/seed.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec ts-node src/server.ts"
+    "test": "jest --detectOpenHandles",
+    "dev": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +23,9 @@
     "express-validator": "^7.0.1",
     "firebase": "^10.8.1",
     "mongodb": "^6.3.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -33,9 +35,16 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.11.20",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.6",
+    "@types/jest": "^29.5.12",
+    "@types/supertest": "^6.0.2",
     "esbuild-register": "^3.5.0",
     "nodemon": "^3.1.0",
     "prisma": "^5.10.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2"
   }
 }
