@@ -103,7 +103,6 @@ const createUser = async (
   return user
 }
 
-<<<<<<< src/auth/auth.service.ts
 /**
  * Delete user
  *
@@ -114,7 +113,4 @@ const removeUser = async (userId: string) => {
   return await deleteUserById(userId)
 }
 
-export { findAllUsers, verifyUserByEmail, createUser, removeUser }
-=======
-export { findUsers, verifyUserByEmail, createUser, countFilteredUsers }
->>>>>>> src/auth/auth.service.ts
+export { findUsers, verifyUserByEmail, createUser, countFilteredUsers, removeUser }
