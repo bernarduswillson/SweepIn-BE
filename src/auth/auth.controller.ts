@@ -3,9 +3,10 @@ import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
 import {
-  findAllUsers,
+  findUsers,
   verifyUserByEmail,
   createUser,
+  countFilteredUsers,
   removeUser
 } from "./auth.service"
 
@@ -13,15 +14,39 @@ const route = express.Router()
 
 /**
  * @method GET /user
- * @returns all users
+ *
+ * @param {string} name
+ * @param {string} role
+ * @param {string} location
+ * @param {string} page - Current page
+ * @param {string} per_page - The number of data in a page
+ *
+ * @returns users
+ *
+ * @example http://{{base_url}}/user?name=:name&role=:role&location=:location&page=:page&per_page=:perPage
  */
 route.get("/user", async (req: Request, res: Response) => {
   try {
-    const users = await findAllUsers()
+    const { name, role, location, page, per_page } = req.query
+
+    const users = await findUsers(
+      name as string,
+      role as string,
+      location as string,
+      page as string,
+      per_page as string
+    )
+
+    const count = await countFilteredUsers(
+      name as string,
+      role as string,
+      location as string
+    )
 
     return res.status(200).json({
       message: "Users fetched",
-      data: users
+      data: users,
+      count
     })
   } catch (error) {
     responseError(error, res)

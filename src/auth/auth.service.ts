@@ -1,9 +1,10 @@
 import { UnauthorizedError } from "../class/Error"
 
 import {
-  getAllUsers,
+  getUsers,
   getUserByEmail,
   generateUser,
+  countUsers,
   deleteUserById
 } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
@@ -15,14 +16,34 @@ import { InvalidAttributeError } from "../class/Error"
  * @returns All users
  */
 
-const findAllUsers = async () => {
-  const users = await getAllUsers()
+const findUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  page: string,
+  perPage: string
+) => {
+  const users = await getUsers(
+    name,
+    role,
+    location,
+    parseInt(page),
+    parseInt(perPage)
+  )
 
   if (!users) {
     throw new Error("Error fetching users")
   }
 
   return users
+}
+
+const countFilteredUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined
+) => {
+  return await countUsers(name, role, location)
 }
 
 /**
@@ -82,6 +103,7 @@ const createUser = async (
   return user
 }
 
+<<<<<<< src/auth/auth.service.ts
 /**
  * Delete user
  *
@@ -93,3 +115,6 @@ const removeUser = async (userId: string) => {
 }
 
 export { findAllUsers, verifyUserByEmail, createUser, removeUser }
+=======
+export { findUsers, verifyUserByEmail, createUser, countFilteredUsers }
+>>>>>>> src/auth/auth.service.ts
