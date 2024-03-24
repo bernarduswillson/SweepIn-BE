@@ -8,8 +8,8 @@ const image2 = path.resolve(__dirname, "test2.png")
 
 let userPayload = {
     id: "1",
-    name: "ken17",
-    email: "ken17@gmail.com",
+    name: Math.random().toString(36).substring(7),
+    email: Math.random().toString(36).substring(7) + "@example.com",
     role: "SECURITY",
     location: "CIREBON"
 }

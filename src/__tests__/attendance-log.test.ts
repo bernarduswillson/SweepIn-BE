@@ -6,11 +6,10 @@ import path from "path"
 const image1 = path.resolve(__dirname, "__image__/image.png");
 const image2 = path.resolve(__dirname, "test2.png");
 
-
 let userPayload = {
     id: "1",
-    name: "example",
-    email: "example@example.com",
+    name: Math.random().toString(36).substring(7),
+    email: Math.random().toString(36).substring(7) + "@example.com",
     role: "SECURITY",
     location: "CIREBON"
 }
