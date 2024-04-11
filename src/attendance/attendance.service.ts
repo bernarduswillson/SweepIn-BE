@@ -12,19 +12,23 @@ import {
  * @returns Attendance[]
  */
 const filterAttendances = async (
-  userId: string | undefined,
+  userId: string,
   startDate: string | undefined,
   endDate: string | undefined,
   page: string,
   perPage: string
 ) => {
   const attendance = await findAllAttendance(
-    userId,
+    parseInt(userId),
     startDate,
     endDate,
     parseInt(page),
     parseInt(perPage)
   )
+
+  if (!attendance || attendance.length === 0) {
+    throw new NotFoundError("Attendance not found")
+  }
 
   return attendance
 }
@@ -35,13 +39,12 @@ const filterAttendances = async (
  * @description Find attendance details by id
  * @returns Attendance
  */
-const getAttendanceDetails = async (attendanceId: string) => {
-  try {
-    const attendance = await findOneAttendance(attendanceId)
-    return attendance
-  } catch (err: any) {
+const getAttendanceDetails = async (attendanceId: number) => {
+  const attendance = await findOneAttendance(attendanceId)
+  if (!attendance) {
     throw new NotFoundError("Attendance not found")
   }
+  return attendance
 }
 
 /**
@@ -50,8 +53,11 @@ const getAttendanceDetails = async (attendanceId: string) => {
  * @description Create new attendance
  * @returns AttendanceId
  */
-const generateAttendance = async (userId: string, date: string) => {
+const generateAttendance = async (userId: number) => {
   const attendance = await createAttendance(userId)
+  if (!attendance) {
+    throw new Error("Failed to create attendance")
+  }
   return attendance.id
 }
 

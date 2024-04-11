@@ -1,9 +1,9 @@
 import { UnauthorizedError } from "../class/Error"
-import { db } from "../utils/db.server"
+import { db } from "../utils/db"
 
 // Find attendance by userId, startDate, endDate, page, and perPage then sort by date
 const findAllAttendance = async (
-  userId: string | undefined,
+  userId: number,
   startDate: string | undefined,
   endDate: string | undefined,
   page: number,
@@ -43,20 +43,38 @@ const findAllAttendance = async (
 }
 
 // Find unique attendance by id
-const findOneAttendance = async (attendanceId: string) => {
+const findOneAttendance = async (attendanceId: number) => {
   const ret = await db.attendance.findUnique({
     where: {
       id: attendanceId
     },
     include: {
-      user: {
+      startLog: {
         select: {
           id: true,
-          name: true
+          date: true,
+          latitude: true,
+          longitude: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
         }
       },
-      startLog: true,
-      endLog: true
+      endLog: {
+        select: {
+          id: true,
+          date: true,
+          latitude: true,
+          longitude: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
+        }
+      }
     }
   })
 
@@ -64,7 +82,7 @@ const findOneAttendance = async (attendanceId: string) => {
 }
 
 // Create attendance
-const createAttendance = async (userId: string) => {
+const createAttendance = async (userId: number) => {
   const ret = await db.attendance.create({
     data: {
       userId
