@@ -1,12 +1,13 @@
 import { Status } from ".prisma/client"
-import { uploadFile } from "../utils/firestore"
 
 import {
   findAllReports,
   createReport,
+  createReportImage,
   findOneReport
 } from "./report.repository"
 import { NotFoundError } from "../class/Error"
+import { getUserById } from "../auth/auth.repository"
 
 /**
  * Filter reports
@@ -15,7 +16,7 @@ import { NotFoundError } from "../class/Error"
  * @returns Report[]
  */
 const filterReports = async (
-  userId: string | undefined,
+  userId: string,
   startDate: string | undefined,
   endDate: string | undefined,
   status: Status | undefined,
@@ -23,7 +24,7 @@ const filterReports = async (
   perPage: string
 ) => {
   const reports = await findAllReports(
-    userId,
+    parseInt(userId),
     startDate,
     endDate,
     status,
@@ -31,16 +32,19 @@ const filterReports = async (
     parseInt(perPage)
   )
 
+  if (!reports || reports.length === 0) {
+    throw new NotFoundError("Reports not found")
+  }
+
   return reports
 }
 
 const getReportDetails = async (reportId: string) => {
-  try {
-    const report = await findOneReport(reportId)
-    return report
-  } catch (error) {
+  const report = await findOneReport(parseInt(reportId))
+  if (!report) {
     throw new NotFoundError("Report not found")
   }
+  return report
 }
 
 /**
@@ -54,21 +58,21 @@ const submitReport = async (
   images: Express.Multer.File[],
   description: string | undefined
 ) => {
-  // TODO: Validate userId
+  const userExists = await getUserById(parseInt(userId))
 
-  let documentation: string[] = []
-
-  if (Array.isArray(images)) {
-    for (const image of images) {
-      const url = await uploadFile(image)
-      documentation.push(url)
-    }
-  } else {
-    const url = await uploadFile(images)
-    documentation.push(url)
+  if (!userExists) {
+    throw new NotFoundError("User not found")
   }
 
-  const reportId = await createReport(userId, documentation, description)
+  const reportId = await createReport(parseInt(userId), description)
+
+  if (!reportId) {
+    throw new Error("Failed to create report")
+  }
+
+  for (const image of images) {
+    await createReportImage(reportId.id, image.path)
+  }
 
   return reportId.id
 }

@@ -5,9 +5,11 @@ import { Status } from ".prisma/client"
 import { responseError } from "../class/Error"
 
 import { filterReports, submitReport, getReportDetails } from "./report.service"
+import { storage } from "../utils/storage"
+import fs from "fs"
 
 const route = express.Router()
-const upload = multer()
+const upload = multer({ storage: storage("reports") })
 
 /**
  * @method GET /reports
@@ -48,7 +50,7 @@ route.get("/", async (req: Request, res: Response) => {
  * @param {string} report_id
  * @returns report
  *
- * @example http://{{base_url}}/report/
+ * @example http://{{base_url}}/report/:reportId
  */
 route.get("/:reportId", async (req, res) => {
   try {
@@ -56,9 +58,16 @@ route.get("/:reportId", async (req, res) => {
 
     const reportDetails = await getReportDetails(reportId as string)
 
+    const imagePaths = reportDetails.images.map((image) => image.url)
+
+    const images = imagePaths.map((path) => fs.readFileSync(path))
+
     return res.status(200).json({
       message: "Get report details successful",
-      data: reportDetails
+      data: {
+        ...reportDetails,
+        images
+      }
     })
   } catch (error) {
     responseError(error, res)
@@ -86,7 +95,7 @@ route.post("/", upload.any(), async (req: Request, res: Response) => {
     )
 
     return res.status(200).json({
-      message: "Submit post successful",
+      message: "Report submitted successful",
       data: {
         id: postReport
       }

@@ -1,9 +1,9 @@
 import { Status } from ".prisma/client"
-import { db } from "../utils/db.server"
+import { db } from "../utils/db"
 
 // Find report by userId, status, startDate, endDate, page, and perPage then sort by date
 const findAllReports = async (
-  userId: string | undefined,
+  userId: number | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   status: Status | undefined,
@@ -29,7 +29,7 @@ const findAllReports = async (
 }
 
 // Find one unique report by id
-const findOneReport = async (reportId: string) => {
+const findOneReport = async (reportId: number) => {
   const ret = await db.report.findUnique({
     where: {
       id: reportId
@@ -40,6 +40,11 @@ const findOneReport = async (reportId: string) => {
           id: true,
           name: true
         }
+      },
+      images: {
+        select: {
+          url: true
+        }
       }
     }
   })
@@ -48,18 +53,26 @@ const findOneReport = async (reportId: string) => {
 
 // Create new report
 const createReport = async (
-  userId: string,
-  images: string[],
+  userId: number,
   description: string | undefined
 ) => {
   const ret = await db.report.create({
     data: {
       userId,
-      images,
       description
     }
   })
   return ret
 }
 
-export { findAllReports, findOneReport, createReport }
+const createReportImage = async (reportId: number, url: string) => {
+  const ret = await db.reportImage.create({
+    data: {
+      reportId,
+      url
+    }
+  })
+  return ret
+}
+
+export { findAllReports, findOneReport, createReport, createReportImage }
