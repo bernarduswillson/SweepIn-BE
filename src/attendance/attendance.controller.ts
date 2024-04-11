@@ -1,10 +1,8 @@
 import express from "express"
-import fs from "fs"
 import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
 import { filterAttendances, getAttendanceDetails } from "./attendance.service"
-import { start } from "repl"
 
 const route = express.Router()
 
@@ -52,60 +50,9 @@ route.get("/:attendanceId", async (req: Request, res: Response) => {
 
     const attendance = await getAttendanceDetails(attendanceId)
 
-    const startLogImagePaths = attendance.startLog[0].images.map(
-      (image) => image.url
-    )
-
-    const startLogImages = startLogImagePaths.map((path) =>
-      fs.readFileSync(path)
-    )
-
-    if (attendance.endLog.length === 0) {
-      return res.status(200).json({
-        message: "Get attendance details successful",
-        data: {
-          id: attendance.id,
-          date: attendance.date,
-          userId: attendance.userId,
-          startLog: {
-            id: attendance.startLog[0].id,
-            date: attendance.startLog[0].date,
-            latitude: attendance.startLog[0].latitude,
-            longitude: attendance.startLog[0].longitude,
-            images: startLogImages
-          },
-          endLog: []
-        }
-      })
-    }
-    
-    const endLogImagePaths = attendance.endLog[0].images.map(
-      (image) => image.url
-    )
-
-    const endLogImages = endLogImagePaths.map((path) => fs.readFileSync(path))
-
     return res.status(200).json({
       message: "Get attendance details successful",
-      data: {
-        id: attendance.id,
-        date: attendance.date,
-        userId: attendance.userId,
-        startLog: {
-          id: attendance.startLog[0].id,
-          date: attendance.startLog[0].date,
-          latitude: attendance.startLog[0].latitude,
-          longitude: attendance.startLog[0].longitude,
-          images: startLogImages
-        },
-        endLog: {
-          id: attendance.endLog[0].id,
-          date: attendance.endLog[0].date,
-          latitude: attendance.endLog[0].latitude,
-          longitude: attendance.endLog[0].longitude,
-          images: endLogImages
-        }
-      }
+      data: attendance
     })
   } catch (error) {
     responseError(error, res)

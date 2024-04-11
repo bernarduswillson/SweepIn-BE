@@ -1,4 +1,5 @@
 import { Status } from ".prisma/client"
+import fs from "fs"
 
 import {
   findAllReports,
@@ -44,7 +45,13 @@ const getReportDetails = async (reportId: string) => {
   if (!report) {
     throw new NotFoundError("Report not found")
   }
-  return report
+  const imagePaths = report.images.map((image) => image.url)
+  const images = imagePaths.map((path) => fs.readFileSync(path))
+
+  return {
+    ...report,
+    images
+  }
 }
 
 /**

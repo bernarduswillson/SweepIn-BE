@@ -6,7 +6,6 @@ import { responseError } from "../class/Error"
 
 import { filterReports, submitReport, getReportDetails } from "./report.service"
 import { storage } from "../utils/storage"
-import fs from "fs"
 
 const route = express.Router()
 const upload = multer({ storage: storage("reports") })
@@ -58,16 +57,9 @@ route.get("/:reportId", async (req, res) => {
 
     const reportDetails = await getReportDetails(reportId as string)
 
-    const imagePaths = reportDetails.images.map((image) => image.url)
-
-    const images = imagePaths.map((path) => fs.readFileSync(path))
-
     return res.status(200).json({
       message: "Get report details successful",
-      data: {
-        ...reportDetails,
-        images
-      }
+      data: reportDetails
     })
   } catch (error) {
     responseError(error, res)
