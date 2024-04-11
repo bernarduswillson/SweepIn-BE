@@ -1,6 +1,6 @@
-import { uploadFile } from "../utils/firestore"
 import { generateAttendance } from "../attendance/attendance.service"
-import { createLog } from "./log.repository"
+import { createLog, createLogImage } from "./log.repository"
+import { findOneAttendance } from "../attendance/attendance.repository"
 
 /**
  * Submit log
@@ -16,47 +16,59 @@ const submitLog = async (
   latitude: string,
   longitude: string
 ) => {
-  const imageUrl = await uploadFile(image[0])
   return attendanceId
-    ? await submitEndLog(attendanceId, date, imageUrl, latitude, longitude)
-    : await submitStartLog(userId, date, imageUrl, latitude, longitude)
+    ? await submitEndLog(attendanceId, date, image, latitude, longitude)
+    : await submitStartLog(userId, date, image, latitude, longitude)
 }
 
 const submitStartLog = async (
   userId: string,
   date: string,
-  image: string,
+  images: Express.Multer.File[],
   latitude: string,
   longitude: string
 ) => {
-  const attendanceId = await generateAttendance(userId, date)
+  const attendanceId = await generateAttendance(parseInt(userId))
+
   const { id } = await createLog(
     date,
-    image,
     parseFloat(latitude),
     parseFloat(longitude),
     attendanceId,
     undefined
   )
+
+  for (const image of images) {
+    await createLogImage(id, image.path)
+  }
+
   return { attendanceId, id }
 }
 
 const submitEndLog = async (
   attendanceId: string,
   date: string,
-  image: string,
+  images: Express.Multer.File[],
   latitude: string,
   longitude: string
 ) => {
-  // TODO: Check if attendance exists
+  const attendanceExists = await findOneAttendance(parseInt(attendanceId))
+  if (!attendanceExists) {
+    throw new Error("Attendance does not exist")
+  }
+
   const { id } = await createLog(
     date,
-    image,
     parseFloat(latitude),
     parseFloat(longitude),
     undefined,
-    attendanceId
+    parseInt(attendanceId)
   )
+
+  for (const image of images) {
+    await createLogImage(id, image.path)
+  }
+
   return { attendanceId, id }
 }
 
