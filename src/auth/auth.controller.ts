@@ -111,7 +111,7 @@ route.post("/register", async (req: Request, res: Response) => {
  */
 route.delete("/user/:userId", async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId
+    const userId = parseInt(req.params.userId)
 
     const user = await removeUser(userId)
 

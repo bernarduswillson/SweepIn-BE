@@ -5,7 +5,8 @@ import {
   getUserByEmail,
   generateUser,
   countUsers,
-  deleteUserById
+  deleteUserById,
+  getUserById
 } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
 
@@ -31,8 +32,8 @@ const findUsers = async (
     parseInt(perPage)
   )
 
-  if (!users) {
-    throw new Error("Error fetching users")
+  if (!users || users.length === 0) {
+    throw new Error("Users not found")
   }
 
   return users
@@ -109,8 +110,20 @@ const createUser = async (
  * @description delete a user by id
  * @returns User's data
  */
-const removeUser = async (userId: string) => {
+const removeUser = async (userId: number) => {
+  const userExists = await getUserById(userId)
+
+  if (!userExists) {
+    throw new Error("User not found")
+  }
+
   return await deleteUserById(userId)
 }
 
-export { findUsers, verifyUserByEmail, createUser, countFilteredUsers, removeUser }
+export {
+  findUsers,
+  verifyUserByEmail,
+  createUser,
+  countFilteredUsers,
+  removeUser
+}

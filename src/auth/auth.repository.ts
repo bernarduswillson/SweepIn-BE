@@ -1,4 +1,4 @@
-import { db } from "../utils/db.server"
+import { db } from "../utils/db"
 import { Role, Location } from "@prisma/client"
 
 const getUsers = async (
@@ -21,6 +21,22 @@ const getUsers = async (
   })
 }
 
+const getUserByEmail = async (email: string) => {
+  return await db.user.findFirst({
+    where: {
+      email
+    }
+  })
+}
+
+const getUserById = async (id: number) => {
+  return await db.user.findFirst({
+    where: {
+      id
+    }
+  })
+}
+
 const countUsers = async (
   name: string | undefined,
   role: string | undefined,
@@ -33,14 +49,6 @@ const countUsers = async (
       },
       role: role as Role,
       location: location as Location
-    }
-  })
-}
-
-const getUserByEmail = async (email: string) => {
-  return await db.user.findFirst({
-    where: {
-      email
     }
   })
 }
@@ -61,7 +69,7 @@ const generateUser = async (
   })
 }
 
-const deleteUserById = async (userId: string) => {
+const deleteUserById = async (userId: number) => {
   return await db.user.delete({
     where: {
       id: userId
@@ -69,4 +77,11 @@ const deleteUserById = async (userId: string) => {
   })
 }
 
-export { getUsers, getUserByEmail, generateUser, countUsers, deleteUserById }
+export {
+  getUsers,
+  getUserByEmail,
+  getUserById,
+  generateUser,
+  countUsers,
+  deleteUserById
+}
