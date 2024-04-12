@@ -53,8 +53,13 @@ const submitEndLog = async (
   longitude: string
 ) => {
   const attendanceExists = await findOneAttendance(parseInt(attendanceId))
+
   if (!attendanceExists) {
     throw new Error("Attendance does not exist")
+  }
+
+  if (attendanceExists.endLog.length > 0) {
+    throw new Error("Attendance already ended")
   }
 
   const { id } = await createLog(
@@ -69,7 +74,7 @@ const submitEndLog = async (
     await createLogImage(id, image.path)
   }
 
-  return { attendanceId, id }
+  return { attendanceId: parseInt(attendanceId), id }
 }
 
 export { submitLog }
