@@ -56,7 +56,7 @@ const getAttendanceDetails = async (attendanceId: number) => {
     return {
       id: attendance.id,
       date: attendance.date,
-      userId: attendance.userId,
+      user: attendance.user,
       startLog: {
         id: attendance.startLog[0].id,
         date: attendance.startLog[0].date,
@@ -75,7 +75,7 @@ const getAttendanceDetails = async (attendanceId: number) => {
   return {
     id: attendance.id,
     date: attendance.date,
-    userId: attendance.userId,
+    user: attendance.user,
     startLog: {
       id: attendance.startLog[0].id,
       date: attendance.startLog[0].date,

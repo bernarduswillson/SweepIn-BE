@@ -12,7 +12,12 @@ const findAllAttendance = async (
   const ret = await db.attendance.findMany({
     select: {
       id: true,
-      userId: true,
+      user: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       date: true,
       startLog: {
         select: {
@@ -49,6 +54,12 @@ const findOneAttendance = async (attendanceId: number) => {
       id: attendanceId
     },
     include: {
+      user: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       startLog: {
         select: {
           id: true,
@@ -77,7 +88,6 @@ const findOneAttendance = async (attendanceId: number) => {
       }
     }
   })
-
   return ret
 }
 
