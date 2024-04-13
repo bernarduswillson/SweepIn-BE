@@ -37,6 +37,34 @@ const getUserById = async (id: number) => {
   })
 }
 
+const getUserByName = async (name: string) => {
+  return await db.user.findFirst({
+    where: {
+      name
+    }
+  })
+}
+
+const updateUserById = async (
+  userId: number,
+  email: string,
+  name: string,
+  role: Role,
+  location: Location
+) => {
+  return await db.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      email,
+      name,
+      role,
+      location
+    }
+  })
+}
+
 const countUsers = async (
   name: string | undefined,
   role: string | undefined,
@@ -81,6 +109,8 @@ export {
   getUsers,
   getUserByEmail,
   getUserById,
+  getUserByName,
+  updateUserById,
   generateUser,
   countUsers,
   deleteUserById

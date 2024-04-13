@@ -4,6 +4,8 @@ import { responseError } from "../class/Error"
 
 import {
   findUsers,
+  findOneUser,
+  updateUser,
   verifyUserByEmail,
   createUser,
   countFilteredUsers,
@@ -47,6 +49,55 @@ route.get("/user", async (req: Request, res: Response) => {
       message: "Users fetched",
       data: users,
       count
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method GET /user/:userId
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.get("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId)
+
+    const user = await findOneUser(userId)
+
+    return res.status(200).json({
+      message: "User fetched",
+      data: user
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method PATCH /user/:userId
+ * @param {string} email - user's email
+ * @param {string} name - user's name
+ * @param {string} role - user's role
+ * @param {string} location - user's location
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.patch("/user/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId)
+    const { email, name, role, location } = req.body
+
+    const user = await updateUser(userId, email, name, role, location)
+
+    return res.status(200).json({
+      message: "User updated",
+      data: user
     })
   } catch (error) {
     responseError(error, res)

@@ -3,6 +3,8 @@ import { UnauthorizedError } from "../class/Error"
 import {
   getUsers,
   getUserByEmail,
+  getUserByName,
+  updateUserById,
   generateUser,
   countUsers,
   deleteUserById,
@@ -37,6 +39,59 @@ const findUsers = async (
   }
 
   return users
+}
+
+const findOneUser = async (userId: number) => {
+  const user = await getUserById(userId)
+
+  if (!user) {
+    throw new Error("User not found")
+  }
+
+  return user
+}
+
+const updateUser = async (
+  userId: number,
+  email: string,
+  name: string,
+  role: string,
+  location: string
+) => {
+  // Verify the role and location match the enum
+  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
+    throw new InvalidAttributeError("Invalid role")
+  }
+
+  if (
+    location !== "GANESHA" &&
+    location !== "JATINANGOR" &&
+    location !== "CIREBON" &&
+    location !== "JAKARTA"
+  ) {
+    throw new InvalidAttributeError("Invalid location")
+  }
+  const userExists = await getUserById(userId)
+
+  if (!userExists) {
+    throw new Error("User not found")
+  }
+
+  const emailExists = await getUserByEmail(email)
+
+  if (emailExists) {
+    throw new Error("Email already exists")
+  }
+
+  const nameExists = await getUserByName(name)
+
+  if (nameExists) {
+    throw new Error("Name already exists")
+  }
+
+  const updatedUser = await updateUserById(userId, email, name, role, location)
+
+  return updatedUser
 }
 
 const countFilteredUsers = async (
@@ -122,6 +177,8 @@ const removeUser = async (userId: number) => {
 
 export {
   findUsers,
+  findOneUser,
+  updateUser,
   verifyUserByEmail,
   createUser,
   countFilteredUsers,
