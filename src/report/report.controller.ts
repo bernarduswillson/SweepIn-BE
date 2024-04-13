@@ -88,9 +88,7 @@ route.post("/", upload.any(), async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: "Report submitted successful",
-      data: {
-        id: postReport
-      }
+      data: postReport
     })
   } catch (error) {
     responseError(error, res)

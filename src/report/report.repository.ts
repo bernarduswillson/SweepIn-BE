@@ -19,13 +19,32 @@ const findAllReports = async (
       },
       status
     },
+    include: {
+      images: {
+        select: {
+          id: true
+        }
+      }
+    },
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
       date: "desc"
     }
   })
-  return ret
+  const imagesCount = await db.reportImage.groupBy({
+    by: ["reportId"],
+    _count: {
+      id: true
+    }
+  })
+  return ret.map((report) => {
+    const images = imagesCount.find((image) => image.reportId === report.id)
+    return {
+      ...report,
+      images: images?._count?.id
+    }
+  })
 }
 
 // Find one unique report by id
@@ -34,7 +53,11 @@ const findOneReport = async (reportId: number) => {
     where: {
       id: reportId
     },
-    include: {
+    select: {
+      id: true,
+      date: true,
+      status: true,
+      description: true,
       user: {
         select: {
           id: true,

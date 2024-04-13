@@ -17,7 +17,7 @@ import { getUserById } from "../auth/auth.repository"
  * @returns Report[]
  */
 const filterReports = async (
-  userId: string,
+  userId: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   status: Status | undefined,
@@ -25,7 +25,7 @@ const filterReports = async (
   perPage: string
 ) => {
   const reports = await findAllReports(
-    parseInt(userId),
+    userId ? parseInt(userId) : undefined,
     startDate,
     endDate,
     status,
@@ -71,17 +71,17 @@ const submitReport = async (
     throw new NotFoundError("User not found")
   }
 
-  const reportId = await createReport(parseInt(userId), description)
+  const report = await createReport(parseInt(userId), description)
 
-  if (!reportId) {
+  if (!report) {
     throw new Error("Failed to create report")
   }
 
   for (const image of images) {
-    await createReportImage(reportId.id, image.path)
+    await createReportImage(report.id, image.path)
   }
 
-  return reportId.id
+  return report
 }
 
 export { filterReports, getReportDetails, submitReport }
