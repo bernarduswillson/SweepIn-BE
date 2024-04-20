@@ -2,9 +2,6 @@ import { Status } from ".prisma/client"
 import fs from "fs"
 import qrcode from "qrcode"
 import sharp from "sharp"
-// import textToImage from "text-to-image"
-import { generate } from "text-to-image"
-import { Readable } from "stream"
 import { createCanvas } from "canvas"
 
 import {
@@ -82,46 +79,29 @@ const submitReport = async (
   if (!report) {
     throw new Error("Failed to create report")
   }
-
-
-    const processedImages = await generateAndOverlayImages("http://www.sweepin.itb.ac.id/laporan/138", images, "Example text");
+    const processedImages = await generateAndOverlayImages("http://www.sweepin.itb.ac.id/laporan/138", images, "Example text")
     
     for (const image of images) {
       await createReportImage(report.id, image.path)
-        return report;
+      return report
     }
 }
 
 const generateAndOverlayImages = async (
-  reportId: string,
+  qrText: string,
   images: Express.Multer.File[],
   text: string
 ) => {
-  try {
-      // Generate QR code for the report ID
-      const qrCodeData = await qrcode.toBuffer(reportId)
+      const qrCodeData = await qrcode.toBuffer(qrText)
       const qrInfo = await sharp(qrCodeData).metadata()
       const qrWidth = qrInfo.width!
       const qrHeight = qrInfo.height!
-      // const logoBuffer = fs.readFileSync('./storage/logo.jpg')
-      
-    
 
-
-      // const size = 2000
-      // const padding = 50
-      // const qrCodeCanvas = createCanvas(size, size)
-      // await qrcode.toCanvas(qrCodeCanvas, reportId)
-      // const qrCodeData = qrCodeCanvas.toBuffer('image/jpeg')
-
-      // const date = new Date().toString()
       const date = "19 April 2024"
       const langLong = "123.123, 123.123"
-      const text2 = "Lorem ipsum peler amet"
+      const text2 = "Lorem ipsum amet"
       const textBuffer = await textToImage(date,langLong, text2, text, 600, 180)
       
-
-
       
       // Overlay QR code onto each image
       const processedImages = await Promise.all(
@@ -132,107 +112,52 @@ const generateAndOverlayImages = async (
               const height = imageInfo.height!
               const width = imageInfo.width!
 
-              
-              // const height = imagee.length
-              // const width = Math.round(height / 0.75)
-              // const imageBuffer  = await sharp(imagee)
-              //   .resize(width, null)
-              //   .toBuffer()
-
               const overlayedImageBuffer = await sharp(imageBuffer)
                 .composite([{ input: qrCodeData, top: height - 10 - qrHeight , left: width - 10 - qrWidth }])
-                .toBuffer();
-                
-
-              // const logoInsert = await sharp(overlayedImageBuffer)
-              //   .composite([{ input: logoBuffer, top: 10, left: 10 }])
-              //   .toBuffer();
+                .toBuffer()
 
               const processedImageBuffer = await sharp(overlayedImageBuffer)
                 .composite([{ input: textBuffer, gravity: "southwest"}])
-                .toBuffer();
+                .toBuffer()
 
-              const filename = `./storage/reports/${image.filename.split('.')[0]}.${image.filename.split('.')[1]}`;
+              const filename = `./storage/reports/${image.filename.split('.')[0]}.${image.filename.split('.')[1]}`
               fs.unlinkSync(image.path)
-              // fs.writeFileSync(filename, overlayedImageBuffer)
+
               fs.writeFileSync(filename, processedImageBuffer)
               return filename
           })
-      );
+      )
 
-      return processedImages;
-  } catch (error) {
-      console.log(error)
-      throw new Error("Failed to overlay images")
-  }
-};
+      return processedImages
+}
 
 const textToImage = async (date: string, langLong:string, text2: string,text: string, width: number, height: number) => {
-  const canvas = createCanvas(width, height);
-    const context = canvas.getContext('2d');
+  const canvas = createCanvas(width, height)
+    const context = canvas.getContext('2d')
 
-    // Background color
-    context.clearRect(0, 0, width, height);
 
-    // context.fillStyle = '#000000'
-    // context.fillRect(0, 0, width, height)
+    context.clearRect(0, 0, width, height)
 
-    // Text settings
+
     context.fillStyle = '#FFFFFF'
-    context.font = '28px Arial' // You can change the font and size here
+    context.font = '28px Arial' 
     context.textAlign = 'start'
     context.textBaseline = 'alphabetic'
 
-    // Split text into multiple lines if it's too long
     const maxLines = 4
     const lines: string[] = []
     lines.push(date)
     lines.push(langLong)
     lines.push(text2)
     lines.push(text)
-    const lineHeight = (height-40) / maxLines;
+    const lineHeight = (height-40) / maxLines
     for (let i = 0; i < lines.length && i < maxLines; i++) {
-        const line = lines[i];
-        const y = height / 2 - height / 4 + lineHeight * i;
-        context.fillText(line, 20, y, width * 0.9); // Center text horizontally
+        const line = lines[i]
+        const y = height / 2 - height / 4 + lineHeight * i
+        context.fillText(line, 20, y, width * 0.9)
     }
 
-    // Convert canvas to a buffer
-    return canvas.toBuffer();
-  // const canvas = createCanvas(width, height);
-  // const context = canvas.getContext('2d');
-
-  //   // Background color
-  //   // context.fillStyle = '#ffffff';
-  //   context.clearRect(0, 0, width, height);
-
-  //   // Text settings
-  //   context.fillStyle = '#FFFFFF';
-  //   context.font = '15px Arial'; // You can change the font and size here
-  //   context.textAlign = 'center';
-  //   context.textBaseline = 'middle';
-
-  //   // Split text into multiple lines if it's too long
-  //   const maxLineWidth = 0.9 * width; // 90% of canvas width
-  //   let words = text.split(' ');
-  //   let line = '';
-  //   let y = height / 2 - 30; // Start from center vertically
-  //   for (let n = 0; n < words.length; n++) {
-  //       let testLine = line + words[n] + ' ';
-  //       let metrics = context.measureText(testLine);
-  //       let testWidth = metrics.width;
-  //       if (testWidth > maxLineWidth && n > 0) {
-  //           context.fillText(line, width / 2, y);
-  //           line = words[n] + ' ';
-  //           y += 30; // Move to next line
-  //       } else {
-  //           line = testLine;
-  //       }
-  //   }
-  //   context.fillText(line, width / 2, y);
-
-  //   // Convert canvas to a buffer
-  //   return canvas.toBuffer();
+    return canvas.toBuffer()
 }
 
 export { filterReports, getReportDetails, submitReport }
