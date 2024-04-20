@@ -5,10 +5,12 @@ import {
   findAllReports,
   createReport,
   createReportImage,
-  findOneReport
+  findOneReport,
+  updateStatus
 } from "./report.repository"
-import { NotFoundError } from "../class/Error"
+import { InvalidAttributeError,NotFoundError } from "../class/Error"
 import { getUserById } from "../auth/auth.repository"
+
 
 /**
  * Filter reports
@@ -18,6 +20,9 @@ import { getUserById } from "../auth/auth.repository"
  */
 const filterReports = async (
   userId: string | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   status: Status | undefined,
@@ -26,6 +31,9 @@ const filterReports = async (
 ) => {
   const reports = await findAllReports(
     userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
     startDate,
     endDate,
     status,
@@ -35,6 +43,18 @@ const filterReports = async (
 
   if (!reports || reports.length === 0) {
     throw new NotFoundError("Reports not found")
+  }
+  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY" && role !== undefined) {
+    throw new InvalidAttributeError("Invalid role")
+  }
+  if (
+    location !== "GANESHA" &&
+    location !== "JATINANGOR" &&
+    location !== "CIREBON" &&
+    location !== "JAKARTA" &&
+    location !== undefined
+  ) {
+    throw new InvalidAttributeError("Invalid location")
   }
 
   return reports
@@ -76,12 +96,27 @@ const submitReport = async (
   if (!report) {
     throw new Error("Failed to create report")
   }
-
-  for (const image of images) {
-    await createReportImage(report.id, image.path)
-  }
-
-  return report
+    
+    for (const image of images) {
+      await createReportImage(report.id, image.path)
+        return report;
+    }
 }
 
-export { filterReports, getReportDetails, submitReport }
+/**
+ * Update report status
+ *
+ * @description Update report status by id
+ * @returns Report
+ */
+const updateReportStatus = async (reportId: string, status: Status) => {
+  const report = await findOneReport(parseInt(reportId))
+
+  if (!report) {
+    throw new NotFoundError("Report not found")
+  }
+
+  return await updateStatus(parseInt(reportId), status)
+}
+
+export { filterReports, getReportDetails, submitReport, updateReportStatus }

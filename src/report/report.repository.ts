@@ -1,9 +1,13 @@
 import { Status } from ".prisma/client"
 import { db } from "../utils/db"
+import { Role, Location } from "@prisma/client"
 
 // Find report by userId, status, startDate, endDate, page, and perPage then sort by date
 const findAllReports = async (
   userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   status: Status | undefined,
@@ -12,7 +16,12 @@ const findAllReports = async (
 ) => {
   const ret = await db.report.findMany({
     where: {
-      userId,
+      user: {
+        id: userId,
+        name: user,
+        role: role as Role,
+        location: location as Location
+      },
       date: {
         gte: startDate ? new Date(startDate).toISOString() : undefined,
         lte: endDate ? new Date(endDate).toISOString() : undefined
@@ -98,4 +107,16 @@ const createReportImage = async (reportId: number, url: string) => {
   return ret
 }
 
-export { findAllReports, findOneReport, createReport, createReportImage }
+const updateStatus = async (reportId: number, status: Status) => {
+  const ret = await db.report.update({
+    where: {
+      id: reportId
+    },
+    data: {
+      status
+    }
+  })
+  return ret
+}
+
+export { findAllReports, findOneReport, createReport, createReportImage, updateStatus }

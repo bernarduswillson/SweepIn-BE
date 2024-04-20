@@ -1,5 +1,5 @@
 import fs from "fs"
-import { NotFoundError } from "../class/Error"
+import { InvalidAttributeError, NotFoundError } from "../class/Error"
 import {
   createAttendance,
   findAllAttendance,
@@ -13,14 +13,20 @@ import {
  * @returns Attendance[]
  */
 const filterAttendances = async (
-  userId: string,
+  userId: string | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   page: string,
   perPage: string
 ) => {
   const attendance = await findAllAttendance(
-    parseInt(userId),
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
     startDate,
     endDate,
     parseInt(page),
@@ -29,6 +35,19 @@ const filterAttendances = async (
 
   if (!attendance || attendance.length === 0) {
     throw new NotFoundError("Attendance not found")
+  }
+
+  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY" && role !== undefined) {
+    throw new InvalidAttributeError("Invalid role")
+  }
+  if (
+    location !== "GANESHA" &&
+    location !== "JATINANGOR" &&
+    location !== "CIREBON" &&
+    location !== "JAKARTA" &&
+    location !== undefined
+  ) {
+    throw new InvalidAttributeError("Invalid location")
   }
 
   return attendance

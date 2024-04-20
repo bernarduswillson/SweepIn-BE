@@ -19,9 +19,12 @@ const route = express.Router()
  */
 route.get("/", async (req: Request, res: Response) => {
   try {
-    const { user_id, start_date, end_date, page, per_page } = req.query
+    const { user_id, user, role, location, start_date, end_date, page, per_page } = req.query
     const attendances = await filterAttendances(
       user_id as string,
+      user as string,
+      role as string,
+      location as string,
       start_date as string,
       end_date as string,
       page as string,
