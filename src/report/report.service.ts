@@ -103,7 +103,7 @@ const submitReport = async (
   if (!report) {
     throw new Error('Failed to create report')
   }
-  const processedImages = await generateAndOverlayImages(
+  const _ = await generateAndOverlayImages(
     'http://www.sweepin.itb.ac.id/laporan/138',
     images,
     'Example text'
@@ -111,8 +111,9 @@ const submitReport = async (
 
   for (const image of images) {
     await createReportImage(report.id, image.path)
-    return report
   }
+
+  return report
 }
 
 const generateAndOverlayImages = async (

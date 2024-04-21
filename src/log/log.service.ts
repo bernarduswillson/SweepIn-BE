@@ -5,6 +5,8 @@ import qrcode from 'qrcode'
 import sharp from 'sharp'
 import { createCanvas } from 'canvas'
 import fs from 'fs'
+import { getUserById } from '../auth/auth.repository'
+import { NotFoundError } from '../class/Error'
 
 /**
  * Submit log
@@ -20,7 +22,13 @@ const submitLog = async (
   latitude: string,
   longitude: string
 ) => {
-  const processedImage = await generateAndOverlayImage(
+  const userExists = await getUserById(parseInt(userId))
+
+  if (!userExists) {
+    throw new NotFoundError('User not found')
+  }
+
+  const _ = await generateAndOverlayImage(
     'http://www.sweepin.itb.ac.id/log/138',
     image,
     'Example text'
