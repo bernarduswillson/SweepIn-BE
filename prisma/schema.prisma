@@ -75,6 +75,7 @@ enum Location {
   JATINANGOR
   CIREBON
   JAKARTA
+  BOSSCHA
 }
 
 enum Status {

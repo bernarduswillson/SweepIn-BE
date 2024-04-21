@@ -11,7 +11,7 @@ import {
   getUserById
 } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
-
+import { Role, Location } from "@prisma/client"
 /**
  * Get all users
  *
@@ -59,18 +59,14 @@ const updateUser = async (
   location: string
 ) => {
   // Verify the role and location match the enum
-  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
+  if (!(role in Role)) {
     throw new InvalidAttributeError("Invalid role")
   }
 
-  if (
-    location !== "GANESHA" &&
-    location !== "JATINANGOR" &&
-    location !== "CIREBON" &&
-    location !== "JAKARTA"
-  ) {
+  if (!(location in Location)) {
     throw new InvalidAttributeError("Invalid location")
   }
+
   const userExists = await getUserById(userId)
 
   if (!userExists) {
@@ -79,17 +75,23 @@ const updateUser = async (
 
   const emailExists = await getUserByEmail(email)
 
-  if (emailExists) {
+  if (emailExists && emailExists.id !== userId) {
     throw new Error("Email already exists")
   }
 
   const nameExists = await getUserByName(name)
 
-  if (nameExists) {
+  if (nameExists && nameExists.id !== userId) {
     throw new Error("Name already exists")
   }
 
-  const updatedUser = await updateUserById(userId, email, name, role, location)
+  const updatedUser = await updateUserById(
+    userId,
+    email,
+    name,
+    role as Role,
+    location as Location
+  )
 
   return updatedUser
 }
@@ -132,25 +134,26 @@ const createUser = async (
   location: string
 ) => {
   // Verify the role and location match the enum
-  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
+  if (!(role in Role)) {
     throw new InvalidAttributeError("Invalid role")
   }
 
-  if (
-    location !== "GANESHA" &&
-    location !== "JATINANGOR" &&
-    location !== "CIREBON" &&
-    location !== "JAKARTA"
-  ) {
+  if (!(location in Location)) {
     throw new InvalidAttributeError("Invalid location")
   }
+
   const userExists = await getUserByEmail(email)
 
   if (userExists) {
     throw new Error("User already exists")
   }
 
-  const user = await generateUser(email, name, role, location)
+  const user = await generateUser(
+    email,
+    name,
+    role as Role,
+    location as Location
+  )
 
   if (!user) {
     throw new Error("Error creating user")

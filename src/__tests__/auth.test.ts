@@ -3,16 +3,16 @@ import supertest from "supertest"
 import { createServer } from "../utils/server"
 
 const userPayload: User = {
-  id: "1",
-  name: "Test",
-  email: "test@test.com",
+  id: 1,
+  name: "authTest",
+  email: "authtest@test.com",
   role: "SECURITY",
   location: "GANESHA"
 }
 
 describe("Auth Service", () => {
   describe("Registration", () => {
-    describe("given an valid user", () => {
+    describe("given a valid user", () => {
       it("should be able to create a new user", async () => {
         const { body, statusCode } = await supertest(createServer())
           .post("/register")
@@ -24,14 +24,34 @@ describe("Auth Service", () => {
         expect(body.data).toEqual(userPayload)
       })
     })
-    describe("given an invalid user", () => {
+    describe("given an existing user", () => {
       it("should not be able to create a new user", async () => {
         const { body, statusCode } = await supertest(createServer())
           .post("/register")
           .send(userPayload)
 
         expect(statusCode).toBe(500)
-        expect(body.message).toBe("Internal server error")
+        expect(body.message).toBe("User already exists")
+      })
+    })
+    describe("given an invalid role", () => {
+      it("should not be able to create a new user", async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post("/register")
+          .send({ ...userPayload, role: "INVALID" })
+
+        expect(statusCode).toBe(400)
+        expect(body.message).toBe("Invalid role")
+      })
+    })
+    describe("given an invalid location", () => {
+      it("should not be able to create a new user", async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post("/register")
+          .send({ ...userPayload, location: "INVALID" })
+
+        expect(statusCode).toBe(400)
+        expect(body.message).toBe("Invalid location")
       })
     })
   })
@@ -81,7 +101,7 @@ describe("Auth Service", () => {
         )
 
         expect(statusCode).toBe(500)
-        expect(body.message).toBe("Internal server error")
+        expect(body.message).toBe("User not found")
       })
     })
   })
