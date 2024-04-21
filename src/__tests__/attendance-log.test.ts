@@ -2,7 +2,6 @@ import supertest from 'supertest'
 import { createServer } from '../utils/server'
 import path from 'path'
 import { Attendance, Log, User } from '@prisma/client'
-import { log } from 'console'
 import { db } from '../utils/db'
 
 const image1 = path.resolve(__dirname, '__image__/image.png')
@@ -65,6 +64,22 @@ describe('Attendance and Log Service', () => {
         expect(body.message).toBe('Submit log successful')
       }, 20000)
     })
+    describe('given an inexistent user id', () => {
+      it('should not be able to create a new start attendance log', async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post('/log')
+          .field({
+            userId: 0,
+            date: logPayload.date.toISOString(),
+            latitude: logPayload.latitude,
+            longitude: logPayload.longitude
+          })
+          .attach('file', image1)
+        
+        expect(statusCode).toBe(404)
+        expect(body.message).toBe('User not found')
+      })
+    })
   })
   describe('Create End Attendance Log', () => {
     describe('given a valid end attendance log', () => {
@@ -103,6 +118,39 @@ describe('Attendance and Log Service', () => {
 
         expect(statusCode).toBe(500)
         expect(body.message).toBe('Attendance does not exist')
+      })
+    })
+    describe('given an inexistent user id', () => {
+      it('should not be able to create a new start attendance log', async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post('/log')
+          .field({
+            userId: 0,
+            date: logPayload.date.toISOString(),
+            latitude: logPayload.latitude,
+            longitude: logPayload.longitude
+          })
+          .attach('file', image1)
+        
+        expect(statusCode).toBe(404)
+        expect(body.message).toBe('User not found')
+      })
+    })
+    describe('given an attendance that has already ended', () => {
+      it('should not be able to create a new end attendance log', async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post('/log')
+          .field({
+            userId: userPayload.id,
+            attendanceId: attendancePayload.id,
+            date: logPayload.date.toISOString(),
+            latitude: logPayload.latitude,
+            longitude: logPayload.longitude
+          })
+          .attach('file', image1)
+
+        expect(statusCode).toBe(500)
+        expect(body.message).toBe('Attendance already ended')
       })
     })
   })
