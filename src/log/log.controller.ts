@@ -4,9 +4,10 @@ import type { Request, Response } from "express"
 import { responseError } from "../class/Error"
 
 import { submitLog } from "./log.service"
+import { storage } from "../utils/storage"
 
 const route = express.Router()
-const upload = multer()
+const upload = multer({storage: storage("attendances")})
 
 /**
  * @method POST /log

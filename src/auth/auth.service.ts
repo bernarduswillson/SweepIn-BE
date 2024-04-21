@@ -3,12 +3,15 @@ import { UnauthorizedError } from "../class/Error"
 import {
   getUsers,
   getUserByEmail,
+  getUserByName,
+  updateUserById,
   generateUser,
   countUsers,
-  deleteUserById
+  deleteUserById,
+  getUserById
 } from "./auth.repository"
 import { InvalidAttributeError } from "../class/Error"
-
+import { Role, Location } from "@prisma/client"
 /**
  * Get all users
  *
@@ -31,11 +34,66 @@ const findUsers = async (
     parseInt(perPage)
   )
 
-  if (!users) {
-    throw new Error("Error fetching users")
+  if (!users || users.length === 0) {
+    throw new Error("Users not found")
   }
 
   return users
+}
+
+const findOneUser = async (userId: number) => {
+  const user = await getUserById(userId)
+
+  if (!user) {
+    throw new Error("User not found")
+  }
+
+  return user
+}
+
+const updateUser = async (
+  userId: number,
+  email: string,
+  name: string,
+  role: string,
+  location: string
+) => {
+  // Verify the role and location match the enum
+  if (!(role in Role)) {
+    throw new InvalidAttributeError("Invalid role")
+  }
+
+  if (!(location in Location)) {
+    throw new InvalidAttributeError("Invalid location")
+  }
+
+  const userExists = await getUserById(userId)
+
+  if (!userExists) {
+    throw new Error("User not found")
+  }
+
+  const emailExists = await getUserByEmail(email)
+
+  if (emailExists && emailExists.id !== userId) {
+    throw new Error("Email already exists")
+  }
+
+  const nameExists = await getUserByName(name)
+
+  if (nameExists && nameExists.id !== userId) {
+    throw new Error("Name already exists")
+  }
+
+  const updatedUser = await updateUserById(
+    userId,
+    email,
+    name,
+    role as Role,
+    location as Location
+  )
+
+  return updatedUser
 }
 
 const countFilteredUsers = async (
@@ -76,25 +134,26 @@ const createUser = async (
   location: string
 ) => {
   // Verify the role and location match the enum
-  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY") {
+  if (!(role in Role)) {
     throw new InvalidAttributeError("Invalid role")
   }
 
-  if (
-    location !== "GANESHA" &&
-    location !== "JATINANGOR" &&
-    location !== "CIREBON" &&
-    location !== "JAKARTA"
-  ) {
+  if (!(location in Location)) {
     throw new InvalidAttributeError("Invalid location")
   }
+
   const userExists = await getUserByEmail(email)
 
   if (userExists) {
     throw new Error("User already exists")
   }
 
-  const user = await generateUser(email, name, role, location)
+  const user = await generateUser(
+    email,
+    name,
+    role as Role,
+    location as Location
+  )
 
   if (!user) {
     throw new Error("Error creating user")
@@ -109,8 +168,22 @@ const createUser = async (
  * @description delete a user by id
  * @returns User's data
  */
-const removeUser = async (userId: string) => {
+const removeUser = async (userId: number) => {
+  const userExists = await getUserById(userId)
+
+  if (!userExists) {
+    throw new Error("User not found")
+  }
+
   return await deleteUserById(userId)
 }
 
-export { findUsers, verifyUserByEmail, createUser, countFilteredUsers, removeUser }
+export {
+  findUsers,
+  findOneUser,
+  updateUser,
+  verifyUserByEmail,
+  createUser,
+  countFilteredUsers,
+  removeUser
+}

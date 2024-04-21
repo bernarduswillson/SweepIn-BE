@@ -39,7 +39,7 @@ const responseError = (e: any, res: Response) => {
   }
   console.error(e)
   return res.status(500).json({
-    message: "Internal server error"
+    message: e.message
   })
 }
 
