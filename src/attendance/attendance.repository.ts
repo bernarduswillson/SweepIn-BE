@@ -1,9 +1,13 @@
-import { UnauthorizedError } from "../class/Error"
-import { db } from "../utils/db.server"
+import { UnauthorizedError } from '../class/Error'
+import { db } from '../utils/db'
+import { Role, Location } from '@prisma/client'
 
 // Find attendance by userId, startDate, endDate, page, and perPage then sort by date
 const findAllAttendance = async (
-  userId: string | undefined,
+  userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   page: number,
@@ -12,7 +16,12 @@ const findAllAttendance = async (
   const ret = await db.attendance.findMany({
     select: {
       id: true,
-      userId: true,
+      user: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       date: true,
       startLog: {
         select: {
@@ -26,7 +35,13 @@ const findAllAttendance = async (
       }
     },
     where: {
-      userId,
+      user: {
+        id: userId,
+        name: user ? user.toLowerCase() : undefined,
+        role: role as Role,
+        location: location as Location
+      },
+
       date: {
         gte: startDate ? new Date(startDate).toISOString() : undefined,
         lte: endDate ? new Date(endDate).toISOString() : undefined
@@ -35,7 +50,7 @@ const findAllAttendance = async (
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
-      date: "desc"
+      date: 'desc'
     }
   })
 
@@ -43,7 +58,7 @@ const findAllAttendance = async (
 }
 
 // Find unique attendance by id
-const findOneAttendance = async (attendanceId: string) => {
+const findOneAttendance = async (attendanceId: number) => {
   const ret = await db.attendance.findUnique({
     where: {
       id: attendanceId
@@ -55,16 +70,39 @@ const findOneAttendance = async (attendanceId: string) => {
           name: true
         }
       },
-      startLog: true,
-      endLog: true
+      startLog: {
+        select: {
+          id: true,
+          date: true,
+          latitude: true,
+          longitude: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
+        }
+      },
+      endLog: {
+        select: {
+          id: true,
+          date: true,
+          latitude: true,
+          longitude: true,
+          images: {
+            select: {
+              url: true
+            }
+          }
+        }
+      }
     }
   })
-
   return ret
 }
 
 // Create attendance
-const createAttendance = async (userId: string) => {
+const createAttendance = async (userId: number) => {
   const ret = await db.attendance.create({
     data: {
       userId

@@ -1,6 +1,6 @@
-import dotenv from "dotenv"
+import dotenv from 'dotenv'
 
-import { createServer } from "./utils/server"
+import { createServer } from './utils/server'
 
 dotenv.config()
 

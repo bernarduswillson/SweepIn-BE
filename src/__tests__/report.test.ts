@@ -1,30 +1,33 @@
-import supertest from "supertest"
-import { createServer } from "../utils/server"
-import { db } from "../utils/db.server"
-import path from "path"
+import supertest from 'supertest'
+import { createServer } from '../utils/server'
+import { db } from '../utils/db'
+import path from 'path'
+import { Report, User } from '@prisma/client'
 
-const image1 = path.resolve(__dirname, "test1.png")
-const image2 = path.resolve(__dirname, "test2.png")
+const image1 = path.resolve(__dirname, 'test1.png')
+const image2 = path.resolve(__dirname, 'test2.png')
 
-let userPayload = {
-  id: "1",
-  name: Math.random().toString(36).substring(7),
-  email: Math.random().toString(36).substring(7) + "@example.com",
-  role: "SECURITY",
-  location: "CIREBON"
+const userPayload: User = {
+  id: 1,
+  name: 'reportTest',
+  email: 'reportTest@test.com',
+  role: 'SECURITY',
+  location: 'CIREBON'
 }
 
-let reportPayload = {
-  id: "1",
-  userId: "1",
-  status: "WAITING",
-  description: "Test",
-  images: [image1, image2]
+const imagePayload = [image1, image2]
+
+const reportPayload: Report = {
+  id: 1,
+  userId: 1,
+  date: new Date(),
+  status: 'WAITING',
+  description: 'Test'
 }
 
 beforeAll(async () => {
   const { body } = await supertest(createServer())
-    .post("/register")
+    .post('/register')
     .send(userPayload)
 
   reportPayload.userId = body.data.id
@@ -32,63 +35,75 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  db.report.delete({ where: { id: reportPayload.id } })
-  db.user.delete({ where: { id: reportPayload.userId } })
+  await db.user.delete({ where: { id: userPayload.id } })
 })
 
-describe("Report Service", () => {
-  describe("Submit Report", () => {
-    describe("given a valid report", () => {
-      it("should be able to submit a new report", async () => {
+describe('Report Service', () => {
+  describe('Submit Report', () => {
+    describe('given a valid report', () => {
+      it('should be able to submit a new report', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post("/report")
+          .post('/report')
           .field({
             user_id: reportPayload.userId,
-            description: reportPayload.description ?? "", // Ensure description is always a string
-            files: reportPayload.images
+            description: reportPayload.description ?? '',
+            files: imagePayload
           })
         reportPayload.id = body.data.id
+        reportPayload.date = body.data.date
         expect(statusCode).toBe(200)
-        expect(body.message).toBe("Submit post successful")
+        expect(body.message).toBe('Report submitted successful')
+        expect(body.data).toEqual(reportPayload)
       })
     })
 
-    describe("given an invalid report", () => {
-      it("should not be able to submit a new report", async () => {
+    describe('given an unexisting user', () => {
+      it('should not be able to submit a new report', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post("/report")
+          .post('/report')
           .field({
-            description: reportPayload.description ?? "",
-            files: reportPayload.images
+            user_id: 0,
+            description: reportPayload.description ?? '',
+            files: imagePayload
           })
 
-        expect(statusCode).toBe(500)
-        expect(body.message).toBe("Internal server error")
+        expect(statusCode).toBe(404)
+        expect(body.message).toBe('User not found')
       })
     })
   })
 
-  describe("Get Report Details", () => {
-    describe("given a valid report id", () => {
-      it("should be able to retrieve report details", async () => {
+  describe('Get Report Details', () => {
+    describe('given a valid report id', () => {
+      it('should be able to retrieve report details', async () => {
         const { body, statusCode } = await supertest(createServer()).get(
           `/report/${reportPayload.id}`
         )
 
         expect(statusCode).toBe(200)
-        expect(body.message).toBe("Get report details successful")
-        expect(body.data).toBeTruthy()
+        expect(body.message).toBe('Get report details successful')
+        expect(body.data).toStrictEqual({
+          id: reportPayload.id,
+          date: reportPayload.date,
+          status: reportPayload.status,
+          description: reportPayload.description,
+          user: {
+            id: userPayload.id,
+            name: userPayload.name
+          },
+          images: []
+        })
       })
     })
 
-    describe("given an invalid report id", () => {
-      it("should not be able to retrieve report details", async () => {
-        const invalidID = "09a"
+    describe('given an unexisting report id', () => {
+      it('should not be able to retrieve report details', async () => {
+        const invalidID = '0'
         const { body, statusCode } = await supertest(createServer()).get(
           `/report/${invalidID}`
         )
         expect(statusCode).toBe(404)
-        expect(body.message).toBe("Report not found")
+        expect(body.message).toBe('Report not found')
       })
     })
   })

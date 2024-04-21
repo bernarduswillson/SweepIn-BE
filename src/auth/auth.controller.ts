@@ -1,14 +1,16 @@
-import express from "express"
-import type { Request, Response } from "express"
-import { responseError } from "../class/Error"
+import express from 'express'
+import type { Request, Response } from 'express'
+import { responseError } from '../class/Error'
 
 import {
   findUsers,
+  findOneUser,
+  updateUser,
   verifyUserByEmail,
   createUser,
   countFilteredUsers,
   removeUser
-} from "./auth.service"
+} from './auth.service'
 
 const route = express.Router()
 
@@ -25,7 +27,7 @@ const route = express.Router()
  *
  * @example http://{{base_url}}/user?name=:name&role=:role&location=:location&page=:page&per_page=:perPage
  */
-route.get("/user", async (req: Request, res: Response) => {
+route.get('/user', async (req: Request, res: Response) => {
   try {
     const { name, role, location, page, per_page } = req.query
 
@@ -44,9 +46,58 @@ route.get("/user", async (req: Request, res: Response) => {
     )
 
     return res.status(200).json({
-      message: "Users fetched",
+      message: 'Users fetched',
       data: users,
       count
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method GET /user/:userId
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.get('/user/:userId', async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId)
+
+    const user = await findOneUser(userId)
+
+    return res.status(200).json({
+      message: 'User fetched',
+      data: user
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method PATCH /user/:userId
+ * @param {string} email - user's email
+ * @param {string} name - user's name
+ * @param {string} role - user's role
+ * @param {string} location - user's location
+ *
+ * @returns user's data
+ *
+ * @example http://{{base_url}}/user/:userId
+ */
+route.patch('/user/:userId', async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.userId)
+    const { email, name, role, location } = req.body
+
+    const user = await updateUser(userId, email, name, role, location)
+
+    return res.status(200).json({
+      message: 'User updated',
+      data: user
     })
   } catch (error) {
     responseError(error, res)
@@ -60,14 +111,14 @@ route.get("/user", async (req: Request, res: Response) => {
  *
  * @example http://{{base_url}}/login
  * */
-route.post("/login", async (req: Request, res: Response) => {
+route.post('/login', async (req: Request, res: Response) => {
   try {
     const { email } = req.body
 
     const credentials = await verifyUserByEmail(email)
 
     return res.status(200).json({
-      message: "Login successful",
+      message: 'Login successful',
       data: credentials
     })
   } catch (error) {
@@ -86,14 +137,14 @@ route.post("/login", async (req: Request, res: Response) => {
  *
  * @example http://{{base_url}}/register
  */
-route.post("/register", async (req: Request, res: Response) => {
+route.post('/register', async (req: Request, res: Response) => {
   try {
     const { email, name, role, location } = req.body
 
     const user = await createUser(email, name, role, location)
 
     return res.status(201).json({
-      message: "User created",
+      message: 'User created',
       data: user
     })
   } catch (error: any) {
@@ -109,14 +160,14 @@ route.post("/register", async (req: Request, res: Response) => {
  *
  * @example http://{{base_url}}/user/:userId
  */
-route.delete("/user/:userId", async (req: Request, res: Response) => {
+route.delete('/user/:userId', async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId
+    const userId = parseInt(req.params.userId)
 
     const user = await removeUser(userId)
 
     return res.status(200).json({
-      message: "User deleted",
+      message: 'User deleted',
       data: user
     })
   } catch (error: any) {

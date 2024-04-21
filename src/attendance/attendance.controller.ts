@@ -1,8 +1,8 @@
-import express from "express"
-import type { Request, Response } from "express"
-import { responseError } from "../class/Error"
+import express from 'express'
+import type { Request, Response } from 'express'
+import { responseError } from '../class/Error'
 
-import { filterAttendances, getAttendanceDetails } from "./attendance.service"
+import { filterAttendances, getAttendanceDetails } from './attendance.service'
 
 const route = express.Router()
 
@@ -17,12 +17,23 @@ const route = express.Router()
  *
  * @example http://{{base_url}}/attendance?user_id=:userId&start_date=:startDate&end_date=:endDate&page=:page&per_page=:perPage
  */
-route.get("/", async (req: Request, res: Response) => {
+route.get('/', async (req: Request, res: Response) => {
   try {
-    const { user_id, start_date, end_date, page, per_page } = req.query
-
+    const {
+      user_id,
+      user,
+      role,
+      location,
+      start_date,
+      end_date,
+      page,
+      per_page
+    } = req.query
     const attendances = await filterAttendances(
       user_id as string,
+      user as string,
+      role as string,
+      location as string,
       start_date as string,
       end_date as string,
       page as string,
@@ -30,7 +41,7 @@ route.get("/", async (req: Request, res: Response) => {
     )
 
     res.status(200).json({
-      message: "Get all attendance successful",
+      message: 'Get all attendance successful',
       data: attendances
     })
   } catch (error) {
@@ -45,14 +56,14 @@ route.get("/", async (req: Request, res: Response) => {
  *
  * @example http://{{base_url}}/attendance/:attendanceId
  */
-route.get("/:attendanceId", async (req: Request, res: Response) => {
+route.get('/:attendanceId', async (req: Request, res: Response) => {
   try {
-    const attendanceId = req.params.attendanceId
+    const attendanceId = parseInt(req.params.attendanceId)
 
-    const attendance = await getAttendanceDetails(attendanceId as string)
+    const attendance = await getAttendanceDetails(attendanceId)
 
     return res.status(200).json({
-      message: "Get attendance details successful",
+      message: 'Get attendance details successful',
       data: attendance
     })
   } catch (error) {

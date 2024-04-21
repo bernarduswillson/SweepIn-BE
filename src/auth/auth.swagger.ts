@@ -33,7 +33,7 @@
  *                    example: Login successful
  *                  data:
  *                    $ref: '#/components/schemas'
- *              
+ *
  * /auth/register:
  *   post:
  *      summary: Register user account
@@ -71,7 +71,7 @@
  *                    example: User created
  *                  data:
  *                    $ref: '#/components/schemas'
- * 
+ *
  * components:
  *   schemas:
  *      type: object

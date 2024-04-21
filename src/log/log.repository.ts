@@ -1,17 +1,15 @@
-import { db } from "../utils/db.server"
+import { db } from '../utils/db'
 
 const createLog = async (
   date: string,
-  image: string,
   latitude: number,
   longitude: number,
-  attendanceStartId: string | undefined,
-  attendanceEndId: string | undefined
+  attendanceStartId: number | undefined,
+  attendanceEndId: number | undefined
 ) => {
   const ret = await db.log.create({
     data: {
       date,
-      image,
       latitude,
       longitude,
       attendanceStartId,
@@ -22,4 +20,15 @@ const createLog = async (
   return ret
 }
 
-export { createLog }
+const createLogImage = async (logId: number, url: string) => {
+  const ret = await db.logImage.create({
+    data: {
+      logId,
+      url
+    }
+  })
+
+  return ret
+}
+
+export { createLog, createLogImage }

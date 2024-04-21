@@ -94,7 +94,7 @@
  *                   example: Submit post successful
  *                 data:
  *                   $ref: '#/components/schemas/submitReport'
- * 
+ *
  * /report/{reportId}:
  *   get:
  *     summary: Retrieve report details
