@@ -1,6 +1,6 @@
-import { Status } from ".prisma/client"
-import { db } from "../utils/db"
-import { Role, Location } from "@prisma/client"
+import { Status } from '.prisma/client'
+import { db } from '../utils/db'
+import { Role, Location } from '@prisma/client'
 
 // Find report by userId, status, startDate, endDate, page, and perPage then sort by date
 const findAllReports = async (
@@ -38,11 +38,11 @@ const findAllReports = async (
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
-      date: "desc"
+      date: 'desc'
     }
   })
   const imagesCount = await db.reportImage.groupBy({
-    by: ["reportId"],
+    by: ['reportId'],
     _count: {
       id: true
     }
@@ -119,4 +119,10 @@ const updateStatus = async (reportId: number, status: Status) => {
   return ret
 }
 
-export { findAllReports, findOneReport, createReport, createReportImage, updateStatus }
+export {
+  findAllReports,
+  findOneReport,
+  createReport,
+  createReportImage,
+  updateStatus
+}

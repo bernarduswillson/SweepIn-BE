@@ -1,8 +1,8 @@
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUIExpress from 'swagger-ui-express';
-import { Router } from 'express';
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUIExpress from 'swagger-ui-express'
+import { Router } from 'express'
 
-const router = Router();
+const router = Router()
 
 const options = {
   swaggerDefinition: {
@@ -10,19 +10,19 @@ const options = {
     info: {
       title: 'API',
       version: '1.0.0',
-      description: 'API documentation',
-    },
+      description: 'API documentation'
+    }
   },
   apis: [
     './src/attendance/*.swagger.ts',
     './src/auth/*.swagger.ts',
     './src/log/*.swagger.ts',
     './src/report/*.swagger.ts'
-],
-};
+  ]
+}
 
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJSDoc(options)
 
-router.use('/', swaggerUIExpress.serve, swaggerUIExpress.setup(swaggerSpec));
+router.use('/', swaggerUIExpress.serve, swaggerUIExpress.setup(swaggerSpec))
 
-export default router;
+export default router

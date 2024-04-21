@@ -1,4 +1,4 @@
-import { UnauthorizedError } from "../class/Error"
+import { UnauthorizedError } from '../class/Error'
 
 import {
   getUsers,
@@ -9,9 +9,9 @@ import {
   countUsers,
   deleteUserById,
   getUserById
-} from "./auth.repository"
-import { InvalidAttributeError } from "../class/Error"
-import { Role, Location } from "@prisma/client"
+} from './auth.repository'
+import { InvalidAttributeError } from '../class/Error'
+import { Role, Location } from '@prisma/client'
 /**
  * Get all users
  *
@@ -35,7 +35,7 @@ const findUsers = async (
   )
 
   if (!users || users.length === 0) {
-    throw new Error("Users not found")
+    throw new Error('Users not found')
   }
 
   return users
@@ -45,7 +45,7 @@ const findOneUser = async (userId: number) => {
   const user = await getUserById(userId)
 
   if (!user) {
-    throw new Error("User not found")
+    throw new Error('User not found')
   }
 
   return user
@@ -60,29 +60,29 @@ const updateUser = async (
 ) => {
   // Verify the role and location match the enum
   if (!(role in Role)) {
-    throw new InvalidAttributeError("Invalid role")
+    throw new InvalidAttributeError('Invalid role')
   }
 
   if (!(location in Location)) {
-    throw new InvalidAttributeError("Invalid location")
+    throw new InvalidAttributeError('Invalid location')
   }
 
   const userExists = await getUserById(userId)
 
   if (!userExists) {
-    throw new Error("User not found")
+    throw new Error('User not found')
   }
 
   const emailExists = await getUserByEmail(email)
 
   if (emailExists && emailExists.id !== userId) {
-    throw new Error("Email already exists")
+    throw new Error('Email already exists')
   }
 
   const nameExists = await getUserByName(name)
 
   if (nameExists && nameExists.id !== userId) {
-    throw new Error("Name already exists")
+    throw new Error('Name already exists')
   }
 
   const updatedUser = await updateUserById(
@@ -115,7 +115,7 @@ const verifyUserByEmail = async (email: string) => {
 
   // Check if email is registered
   if (!user) {
-    throw new UnauthorizedError("Email is not registered")
+    throw new UnauthorizedError('Email is not registered')
   }
 
   return user
@@ -135,17 +135,17 @@ const createUser = async (
 ) => {
   // Verify the role and location match the enum
   if (!(role in Role)) {
-    throw new InvalidAttributeError("Invalid role")
+    throw new InvalidAttributeError('Invalid role')
   }
 
   if (!(location in Location)) {
-    throw new InvalidAttributeError("Invalid location")
+    throw new InvalidAttributeError('Invalid location')
   }
 
   const userExists = await getUserByEmail(email)
 
   if (userExists) {
-    throw new Error("User already exists")
+    throw new Error('User already exists')
   }
 
   const user = await generateUser(
@@ -156,7 +156,7 @@ const createUser = async (
   )
 
   if (!user) {
-    throw new Error("Error creating user")
+    throw new Error('Error creating user')
   }
 
   return user
@@ -172,7 +172,7 @@ const removeUser = async (userId: number) => {
   const userExists = await getUserById(userId)
 
   if (!userExists) {
-    throw new Error("User not found")
+    throw new Error('User not found')
   }
 
   return await deleteUserById(userId)

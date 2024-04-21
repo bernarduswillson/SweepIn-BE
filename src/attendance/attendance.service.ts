@@ -1,10 +1,10 @@
-import fs from "fs"
-import { InvalidAttributeError, NotFoundError } from "../class/Error"
+import fs from 'fs'
+import { InvalidAttributeError, NotFoundError } from '../class/Error'
 import {
   createAttendance,
   findAllAttendance,
   findOneAttendance
-} from "./attendance.repository"
+} from './attendance.repository'
 
 /**
  * Filter attendances
@@ -34,20 +34,25 @@ const filterAttendances = async (
   )
 
   if (!attendance || attendance.length === 0) {
-    throw new NotFoundError("Attendance not found")
+    throw new NotFoundError('Attendance not found')
   }
 
-  if (role !== "ADMIN" && role !== "CLEANER" && role !== "SECURITY" && role !== undefined) {
-    throw new InvalidAttributeError("Invalid role")
+  if (
+    role !== 'ADMIN' &&
+    role !== 'CLEANER' &&
+    role !== 'SECURITY' &&
+    role !== undefined
+  ) {
+    throw new InvalidAttributeError('Invalid role')
   }
   if (
-    location !== "GANESHA" &&
-    location !== "JATINANGOR" &&
-    location !== "CIREBON" &&
-    location !== "JAKARTA" &&
+    location !== 'GANESHA' &&
+    location !== 'JATINANGOR' &&
+    location !== 'CIREBON' &&
+    location !== 'JAKARTA' &&
     location !== undefined
   ) {
-    throw new InvalidAttributeError("Invalid location")
+    throw new InvalidAttributeError('Invalid location')
   }
 
   return attendance
@@ -62,7 +67,7 @@ const filterAttendances = async (
 const getAttendanceDetails = async (attendanceId: number) => {
   const attendance = await findOneAttendance(attendanceId)
   if (!attendance) {
-    throw new NotFoundError("Attendance not found")
+    throw new NotFoundError('Attendance not found')
   }
 
   const startLogImagePaths = attendance.startLog[0].images.map(
@@ -121,7 +126,7 @@ const getAttendanceDetails = async (attendanceId: number) => {
 const generateAttendance = async (userId: number) => {
   const attendance = await createAttendance(userId)
   if (!attendance) {
-    throw new Error("Failed to create attendance")
+    throw new Error('Failed to create attendance')
   }
   return attendance.id
 }
