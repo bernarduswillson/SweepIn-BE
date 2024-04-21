@@ -1,4 +1,4 @@
-import { PrismaClient } from ".prisma/client"
+import { PrismaClient } from '.prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -29,7 +29,7 @@ const createLog = async (
     data: {
       date: logDate,
       image:
-        "https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2F2024-03-11T04%3A28%3A42.156Z-099939900_1576591774-Tanda-tanda-Anda-sedang-Membesarkan-Anak-Pemarah-Shutterstock_1034366974.jpg?alt=media&token=331b3f53-95c1-4b1d-b055-d04e03e31afc",
+        'https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2F2024-03-11T04%3A28%3A42.156Z-099939900_1576591774-Tanda-tanda-Anda-sedang-Membesarkan-Anak-Pemarah-Shutterstock_1034366974.jpg?alt=media&token=331b3f53-95c1-4b1d-b055-d04e03e31afc',
       latitude: -6.8922515,
       longitude: 107.60527,
       attendanceStartId: start ? attendanceId : null,
@@ -41,8 +41,8 @@ const createLog = async (
 // Create attendance
 const createAttendance = async (userId: string) => {
   const dates: string[] = createDates(
-    new Date("2024-02-01"),
-    new Date("2024-02-29")
+    new Date('2024-02-01'),
+    new Date('2024-02-29')
   )
 
   for (let i = 0; i < dates.length; i++) {
@@ -71,8 +71,8 @@ const createAttendance = async (userId: string) => {
 // Create report
 const createReport = async (userId: string) => {
   const dates: string[] = createDates(
-    new Date("2024-02-01"),
-    new Date("2024-02-29")
+    new Date('2024-02-01'),
+    new Date('2024-02-29')
   )
 
   for (let i = 0; i < dates.length; i++) {
@@ -91,15 +91,15 @@ const createReport = async (userId: string) => {
         date: reportDate,
         status:
           randomNumber < 0.6
-            ? "WAITING"
+            ? 'WAITING'
             : randomNumber < 0.8
-            ? "ACCEPTED"
-            : "REJECTED",
-        description: "Menjaga gerbang kampus.",
+              ? 'ACCEPTED'
+              : 'REJECTED',
+        description: 'Menjaga gerbang kampus.',
         images: [
-          "https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2F1.jpeg?alt=media&token=3a1494ff-2de2-4395-902b-b2ca68d65601",
-          "https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2Fchica.jpeg?alt=media&token=2ee99079-2591-4718-818c-33be8c361684",
-          "https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2Ffoxy.jpeg?alt=media&token=3e13a866-da49-449d-862b-f0d2a19559a7"
+          'https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2F1.jpeg?alt=media&token=3a1494ff-2de2-4395-902b-b2ca68d65601',
+          'https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2Fchica.jpeg?alt=media&token=2ee99079-2591-4718-818c-33be8c361684',
+          'https://firebasestorage.googleapis.com/v0/b/sweepin.appspot.com/o/files%2Ffoxy.jpeg?alt=media&token=3e13a866-da49-449d-862b-f0d2a19559a7'
         ]
       }
     })
@@ -109,10 +109,10 @@ const createReport = async (userId: string) => {
 const createUser = async () => {
   const user = await prisma.user.create({
     data: {
-      email: "nadilahmad13@gmail.com",
-      name: "Ahmad Nadil",
-      role: "SECURITY",
-      location: "GANESHA"
+      email: 'nadilahmad13@gmail.com',
+      name: 'Ahmad Nadil',
+      role: 'SECURITY',
+      location: 'GANESHA'
     }
   })
 

@@ -1,6 +1,6 @@
-import { UnauthorizedError } from "../class/Error"
-import { db } from "../utils/db"
-import { Role, Location } from "@prisma/client"
+import { UnauthorizedError } from '../class/Error'
+import { db } from '../utils/db'
+import { Role, Location } from '@prisma/client'
 
 // Find attendance by userId, startDate, endDate, page, and perPage then sort by date
 const findAllAttendance = async (
@@ -50,7 +50,7 @@ const findAllAttendance = async (
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
-      date: "desc"
+      date: 'desc'
     }
   })
 

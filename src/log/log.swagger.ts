@@ -40,5 +40,5 @@
  *                 message:
  *                   type: string
  *                   example: Submit log successful
- *                
+ *
  */

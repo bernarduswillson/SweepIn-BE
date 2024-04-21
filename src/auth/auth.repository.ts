@@ -1,5 +1,5 @@
-import { db } from "../utils/db"
-import { Role, Location } from "@prisma/client"
+import { db } from '../utils/db'
+import { Role, Location } from '@prisma/client'
 
 const getUsers = async (
   name: string | undefined,

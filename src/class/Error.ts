@@ -1,11 +1,11 @@
-import type { Response } from "express"
+import type { Response } from 'express'
 
 class UnauthorizedError extends Error {
   code: number = 401
 
   constructor(message: string) {
     super(message)
-    this.name = "UnauthorizedError"
+    this.name = 'UnauthorizedError'
   }
 }
 
@@ -14,7 +14,7 @@ class NotFoundError extends Error {
 
   constructor(message: string) {
     super(message)
-    this.name = "NotFoundError"
+    this.name = 'NotFoundError'
   }
 }
 
@@ -23,7 +23,7 @@ class InvalidAttributeError extends Error {
 
   constructor(message: string) {
     super(message)
-    this.name = "InvalidAttributeError"
+    this.name = 'InvalidAttributeError'
   }
 }
 

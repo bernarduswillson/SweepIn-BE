@@ -1,10 +1,10 @@
-import { generateAttendance } from "../attendance/attendance.service"
-import { createLog, createLogImage } from "./log.repository"
-import { findOneAttendance } from "../attendance/attendance.repository"
-import qrcode from "qrcode"
-import sharp from "sharp"
-import { createCanvas } from "canvas"
-import fs from "fs"
+import { generateAttendance } from '../attendance/attendance.service'
+import { createLog, createLogImage } from './log.repository'
+import { findOneAttendance } from '../attendance/attendance.repository'
+import qrcode from 'qrcode'
+import sharp from 'sharp'
+import { createCanvas } from 'canvas'
+import fs from 'fs'
 
 /**
  * Submit log
@@ -20,8 +20,11 @@ const submitLog = async (
   latitude: string,
   longitude: string
 ) => {
-
-  const processedImage = await generateAndOverlayImage("http://www.sweepin.itb.ac.id/log/138", image, "Example text")
+  const processedImage = await generateAndOverlayImage(
+    'http://www.sweepin.itb.ac.id/log/138',
+    image,
+    'Example text'
+  )
 
   return attendanceId
     ? await submitEndLog(attendanceId, date, image, latitude, longitude)
@@ -62,11 +65,11 @@ const submitEndLog = async (
   const attendanceExists = await findOneAttendance(parseInt(attendanceId))
 
   if (!attendanceExists) {
-    throw new Error("Attendance does not exist")
+    throw new Error('Attendance does not exist')
   }
 
   if (attendanceExists.endLog.length > 0) {
-    throw new Error("Attendance already ended")
+    throw new Error('Attendance already ended')
   }
 
   const { id } = await createLog(
@@ -84,8 +87,7 @@ const submitEndLog = async (
   return { attendanceId: parseInt(attendanceId), id }
 }
 
-
-const generateAndOverlayImage = async(
+const generateAndOverlayImage = async (
   qrText: string,
   images: Express.Multer.File[],
   text: string
@@ -95,10 +97,10 @@ const generateAndOverlayImage = async(
   const qrWidth = qrInfo.width!
   const qrHeight = qrInfo.height!
 
-  const date = "19 April 2024"
-  const langLong = "123.123, 123.123"
-  const text2 = "Lorem ipsum amet"
-  const textBuffer = await textToImage(date,langLong, text2, text, 600, 180) 
+  const date = '19 April 2024'
+  const langLong = '123.123, 123.123'
+  const text2 = 'Lorem ipsum amet'
+  const textBuffer = await textToImage(date, langLong, text2, text, 600, 180)
 
   const imageBuffer = fs.readFileSync(images[0].path)
 
@@ -122,9 +124,9 @@ const generateAndOverlayImage = async(
     .toBuffer()
 
   const processedImageBuffer = await sharp(overlayedImageBuffer)
-    .composite([{ input: textBuffer, gravity: "southwest"}])
+    .composite([{ input: textBuffer, gravity: 'southwest' }])
     .toBuffer()
-  
+
   const filename = `./storage/attendances/${images[0].filename.split('.')[0]}.${images[0].filename.split('.')[1]}`
   fs.unlinkSync(images[0].path)
 
@@ -132,35 +134,38 @@ const generateAndOverlayImage = async(
   return filename
 }
 
-const textToImage = async (date: string, langLong:string, text2: string,text: string, width: number, height: number) => {
+const textToImage = async (
+  date: string,
+  langLong: string,
+  text2: string,
+  text: string,
+  width: number,
+  height: number
+) => {
   const canvas = createCanvas(width, height)
-    const context = canvas.getContext('2d')
+  const context = canvas.getContext('2d')
 
+  context.clearRect(0, 0, width, height)
 
-    context.clearRect(0, 0, width, height)
+  context.fillStyle = '#FFFFFF'
+  context.font = '28px Arial'
+  context.textAlign = 'start'
+  context.textBaseline = 'alphabetic'
 
+  const maxLines = 4
+  const lines: string[] = []
+  lines.push(date)
+  lines.push(langLong)
+  lines.push(text2)
+  lines.push(text)
+  const lineHeight = (height - 40) / maxLines
+  for (let i = 0; i < lines.length && i < maxLines; i++) {
+    const line = lines[i]
+    const y = height / 2 - height / 4 + lineHeight * i
+    context.fillText(line, 20, y, width * 0.9)
+  }
 
-    context.fillStyle = '#FFFFFF'
-    context.font = '28px Arial' 
-    context.textAlign = 'start'
-    context.textBaseline = 'alphabetic'
-
-    const maxLines = 4
-    const lines: string[] = []
-    lines.push(date)
-    lines.push(langLong)
-    lines.push(text2)
-    lines.push(text)
-    const lineHeight = (height-40) / maxLines
-    for (let i = 0; i < lines.length && i < maxLines; i++) {
-        const line = lines[i]
-        const y = height / 2 - height / 4 + lineHeight * i
-        context.fillText(line, 20, y, width * 0.9)
-    }
-
-    return canvas.toBuffer()
+  return canvas.toBuffer()
 }
-
-
 
 export { submitLog }
