@@ -1,9 +1,13 @@
 import { UnauthorizedError } from "../class/Error"
 import { db } from "../utils/db"
+import { Role, Location } from "@prisma/client"
 
 // Find attendance by userId, startDate, endDate, page, and perPage then sort by date
 const findAllAttendance = async (
-  userId: number,
+  userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
   page: number,
@@ -31,7 +35,13 @@ const findAllAttendance = async (
       }
     },
     where: {
-      userId,
+      user: {
+        id: userId,
+        name: user ? user.toLowerCase() : undefined,
+        role: role as Role,
+        location: location as Location
+      },
+
       date: {
         gte: startDate ? new Date(startDate).toISOString() : undefined,
         lte: endDate ? new Date(endDate).toISOString() : undefined

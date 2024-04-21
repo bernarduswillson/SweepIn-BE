@@ -4,7 +4,7 @@ import type { Request, Response } from "express"
 import { Status } from ".prisma/client"
 import { responseError } from "../class/Error"
 
-import { filterReports, submitReport, getReportDetails } from "./report.service"
+import { filterReports, submitReport, getReportDetails, updateReportStatus } from "./report.service"
 import { storage } from "../utils/storage"
 
 const route = express.Router()
@@ -24,10 +24,13 @@ const upload = multer({ storage: storage("reports") })
  */
 route.get("/", async (req: Request, res: Response) => {
   try {
-    const { user_id, start_date, end_date, status, page, per_page } = req.query
+    const { user_id, user, role, location, start_date, end_date, status, page, per_page } = req.query
 
     const reports = await filterReports(
       user_id as string,
+      user as string,
+      role as string,
+      location as string,
       start_date as string,
       end_date as string,
       status as Status,
@@ -89,6 +92,30 @@ route.post("/", upload.any(), async (req: Request, res: Response) => {
     return res.status(200).json({
       message: "Report submitted successful",
       data: postReport
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method POST /report/status
+ * 
+ * @param {string} report_id
+ * @param {string} status
+ * @returns reportId
+ * 
+ * @example http://{{base_url}}/report/:reportId/status
+ *  
+ */
+route.post("/status", async (req, res) => {
+  try {
+    const { reportId, status } = req.body
+    const report = await updateReportStatus(reportId as string, status)
+
+    return res.status(200).json({
+      message: "Update report status successful",
+      data: report
     })
   } catch (error) {
     responseError(error, res)
