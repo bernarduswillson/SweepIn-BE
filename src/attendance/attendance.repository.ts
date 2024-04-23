@@ -57,6 +57,31 @@ const findAllAttendance = async (
   return ret
 }
 
+const countAttendance = async (
+  userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  startDate: string | undefined,
+  endDate: string | undefined
+) => {
+  const ret = await db.attendance.count({
+    where: {
+      user: {
+        id: userId,
+        name: user ? user.toLowerCase() : undefined,
+        role: role as Role,
+        location: location as Location
+      },
+      date: {
+        gte: startDate ? new Date(startDate).toISOString() : undefined,
+        lte: endDate ? new Date(endDate).toISOString() : undefined
+      }
+    }
+  })
+  return ret
+}
+
 // Find unique attendance by id
 const findOneAttendance = async (attendanceId: number) => {
   const ret = await db.attendance.findUnique({
@@ -111,4 +136,4 @@ const createAttendance = async (userId: number) => {
   return ret
 }
 
-export { findAllAttendance, findOneAttendance, createAttendance }
+export { findAllAttendance, findOneAttendance, createAttendance, countAttendance }
