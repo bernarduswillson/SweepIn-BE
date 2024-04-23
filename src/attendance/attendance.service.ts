@@ -3,7 +3,8 @@ import { InvalidAttributeError, NotFoundError } from '../class/Error'
 import {
   createAttendance,
   findAllAttendance,
-  findOneAttendance
+  findOneAttendance,
+  countAttendance
 } from './attendance.repository'
 
 /**
@@ -56,6 +57,17 @@ const filterAttendances = async (
   }
 
   return attendance
+}
+
+const countFilteredAttendance = async (
+  userId: string | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  startDate: string | undefined,
+  endDate: string | undefined
+) => {
+  return await countAttendance(userId ? parseInt(userId) : undefined, user, role, location, startDate, endDate)
 }
 
 /**
@@ -131,4 +143,4 @@ const generateAttendance = async (userId: number) => {
   return attendance.id
 }
 
-export { filterAttendances, getAttendanceDetails, generateAttendance }
+export { filterAttendances, getAttendanceDetails, generateAttendance, countFilteredAttendance }

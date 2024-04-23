@@ -8,9 +8,11 @@ import {
   filterReports,
   submitReport,
   getReportDetails,
-  updateReportStatus
+  updateReportStatus,
+  countFilteredReports
 } from './report.service'
 import { storage } from '../utils/storage'
+import { count } from 'console'
 
 const route = express.Router()
 const upload = multer({ storage: storage('reports') })
@@ -53,9 +55,31 @@ route.get('/', async (req: Request, res: Response) => {
       per_page as string
     )
 
+    const filteredcount = await countFilteredReports(
+      user_id as string,
+      user as string,
+      role as string,
+      location as string,
+      start_date as string,
+      end_date as string,
+      status as Status
+    )
+
+    const countAllReport = await countFilteredReports(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
+
     return res.status(200).json({
       message: 'Get all reports successful',
-      data: reports
+      data: reports,
+      filteredcount,
+      countAllReport
     })
   } catch (error) {
     responseError(error, res)

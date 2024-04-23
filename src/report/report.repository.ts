@@ -56,6 +56,33 @@ const findAllReports = async (
   })
 }
 
+const countReports = async (
+  userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  startDate: string | undefined,
+  endDate: string | undefined,
+  status: Status | undefined
+) => {
+  const ret = await db.report.findMany({
+    where: {
+      user: {
+        id: userId,
+        name: user,
+        role: role as Role,
+        location: location as Location
+      },
+      date: {
+        gte: startDate ? new Date(startDate).toISOString() : undefined,
+        lte: endDate ? new Date(endDate).toISOString() : undefined
+      },
+      status
+    }
+  })
+  return ret
+}
+
 // Find one unique report by id
 const findOneReport = async (reportId: number) => {
   const ret = await db.report.findUnique({
@@ -124,5 +151,6 @@ export {
   findOneReport,
   createReport,
   createReportImage,
-  updateStatus
+  updateStatus,
+  countReports
 }
