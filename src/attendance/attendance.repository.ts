@@ -25,12 +25,14 @@ const findAllAttendance = async (
       date: true,
       startLog: {
         select: {
-          id: true
+          id: true,
+          date: true
         }
       },
       endLog: {
         select: {
-          id: true
+          id: true,
+          date: true
         }
       }
     },
@@ -136,4 +138,9 @@ const createAttendance = async (userId: number) => {
   return ret
 }
 
-export { findAllAttendance, findOneAttendance, createAttendance, countAttendance }
+export {
+  findAllAttendance,
+  findOneAttendance,
+  createAttendance,
+  countAttendance
+}
