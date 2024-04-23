@@ -15,6 +15,18 @@ const findAllReports = async (
   perPage: number
 ) => {
   const ret = await db.report.findMany({
+    select: {
+      id: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        }
+      },
+      date: true,
+      status: true,
+      description: true,
+    },
     where: {
       user: {
         id: userId,
@@ -28,19 +40,13 @@ const findAllReports = async (
       },
       status
     },
-    include: {
-      images: {
-        select: {
-          id: true
-        }
-      }
-    },
     skip: (page - 1) * perPage,
     take: perPage,
     orderBy: {
       date: 'desc'
     }
   })
+  
   const imagesCount = await db.reportImage.groupBy({
     by: ['reportId'],
     _count: {

@@ -65,7 +65,9 @@ route.get('/', async (req: Request, res: Response) => {
       message: 'Get all attendance successful',
       data: attendances,
       filteredcount,
-      countAllAttendance 
+      countAllAttendance,
+      start_date,
+      end_date
     })
   } catch (error) {
     responseError(error, res)
