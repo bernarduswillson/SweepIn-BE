@@ -121,82 +121,94 @@ const generateAndOverlayImages = async (
   images: Express.Multer.File[],
   text: string
 ) => {
-  const qrCodeData = await qrcode.toBuffer(qrText)
-  const qrInfo = await sharp(qrCodeData).metadata()
-  const qrWidth = qrInfo.width!
-  const qrHeight = qrInfo.height!
+    // const qrText: string = 'https://www.sweepin.itb.ac.id/report/69420'
+    const text1: string = 'Lorem Ipsum sir Dolor'
+    const text2: string = 'Example Text'
+    const date: string = '19 April 2024'
+    const time: string = '23:59'
+    const langLong: string = `123.45 432.31`
+    const id: string = 'id : 69420'
+    const web: string = 'www.sweepin.itb.ac.id'
+    const base = fs.readFileSync('./storage/basewatermark.png')
+    const logo = fs.readFileSync('./storage/sweepin-logo.png')
 
-  const date = '19 April 2024'
-  const langLong = '123.123, 123.123'
-  const text2 = 'Lorem ipsum amet'
-  const textBuffer = await textToImage(date, langLong, text2, text, 600, 180)
+    const qrCode = await (qrcode.toBuffer as any)(qrText, {
+        width: 315,
+        height: 315
+    })
 
-  // Overlay QR code onto each image
+    const baseBuffer = await sharp(base)
+        .composite ([{ input: qrCode, top: 5, left: 5 }])
+        .toBuffer()
+
+    const baseBuffer2 = await sharp(baseBuffer)
+        .composite ([{input: logo, top: 82, left: 586}])
+        .toBuffer()
+    
+
+    const canvas = createCanvas(470, 93)
+    const context = canvas.getContext('2d')
+
+    context.clearRect(0,0,470,93)
+
+    context.font = '20px Arial'
+    context.fillStyle = '#FFFFFF'
+    context.textAlign = 'start'
+    context.fillText(id, 10, 30)
+    context.fillText(web, 10, 55)
+
+    const baseBuffer3 = await sharp(baseBuffer2)
+        .composite([{ input: Buffer.from(canvas.toDataURL().split(',')[1], 'base64'), top: 217, left: 320 }])
+        .toBuffer()
+    
+    const canvas2 = createCanvas(249, 211)
+    const context2 = canvas2.getContext('2d')
+
+    context2.clearRect(0,0,249,211)
+
+    context2.font = '20px Arial'
+    context2.fillStyle = '#FFFFFF'
+    context2.textAlign = 'start'
+    context2.fillText(date, 10, 30)
+    context2.fillText(time, 10, 55)
+    context2.fillText(langLong, 10, 80)
+    context2.fillText(text1, 10, 105)
+    context2.fillText(text2, 10, 130)
+
+    const baseBuffer4 = await sharp(baseBuffer3)
+        .composite([{ input: Buffer.from(canvas2.toDataURL().split(',')[1], 'base64'), top: 5, left: 320 }])
+        .toBuffer()
+
   const processedImages = await Promise.all(
     images.map(async (image) => {
-      const imageBuffer = fs.readFileSync(image.path)
+      let imageBuffer = fs.readFileSync(image.path)
+      
+      const imgData = await sharp(imageBuffer).metadata()
+      let imgWidth = imgData.width!
+      let imgHeight = imgData.height!
 
-      const imageInfo = await sharp(imageBuffer).metadata()
-      const height = imageInfo.height!
-      const width = imageInfo.width!
+      if (imgWidth != 2000) {
+        imgWidth = 2000
+        imgHeight = 2667
 
-      const overlayedImageBuffer = await sharp(imageBuffer)
-        .composite([
-          {
-            input: qrCodeData,
-            top: height - 10 - qrHeight,
-            left: width - 10 - qrWidth
-          }
-        ])
+        imageBuffer = await sharp(imageBuffer)
+          .resize(imgWidth, imgHeight)
+          .toBuffer()
+      }
+      const watermarkedImage = await sharp(imageBuffer)
+        .composite([{ input: baseBuffer4, gravity: 'southwest' }])
         .toBuffer()
-
-      const processedImageBuffer = await sharp(overlayedImageBuffer)
-        .composite([{ input: textBuffer, gravity: 'southwest' }])
-        .toBuffer()
-
+      
       const filename = `./storage/reports/${image.filename.split('.')[0]}.${image.filename.split('.')[1]}`
       fs.unlinkSync(image.path)
 
-      fs.writeFileSync(filename, processedImageBuffer)
+
+      fs.writeFileSync(filename, watermarkedImage)
       return filename
     })
   )
 
   return processedImages
-}
-
-const textToImage = async (
-  date: string,
-  langLong: string,
-  text2: string,
-  text: string,
-  width: number,
-  height: number
-) => {
-  const canvas = createCanvas(width, height)
-  const context = canvas.getContext('2d')
-
-  context.clearRect(0, 0, width, height)
-
-  context.fillStyle = '#FFFFFF'
-  context.font = '28px Arial'
-  context.textAlign = 'start'
-  context.textBaseline = 'alphabetic'
-
-  const maxLines = 4
-  const lines: string[] = []
-  lines.push(date)
-  lines.push(langLong)
-  lines.push(text2)
-  lines.push(text)
-  const lineHeight = (height - 40) / maxLines
-  for (let i = 0; i < lines.length && i < maxLines; i++) {
-    const line = lines[i]
-    const y = height / 2 - height / 4 + lineHeight * i
-    context.fillText(line, 20, y, width * 0.9)
-  }
-
-  return canvas.toBuffer()
 }
 
 /**
