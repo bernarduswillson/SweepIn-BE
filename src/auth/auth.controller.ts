@@ -39,16 +39,23 @@ route.get('/user', async (req: Request, res: Response) => {
       per_page as string
     )
 
-    const count = await countFilteredUsers(
+    const filteredcount = await countFilteredUsers(
       name as string,
       role as string,
       location as string
     )
 
+    const countAllUsers = await countFilteredUsers(
+      undefined,
+      undefined,
+      undefined
+    )
+
     return res.status(200).json({
       message: 'Users fetched',
       data: users,
-      count
+      filteredcount,
+      countAllUsers
     })
   } catch (error) {
     responseError(error, res)
