@@ -55,7 +55,7 @@ route.get('/', async (req: Request, res: Response) => {
       per_page as string
     )
 
-    const count = await countFilteredReports(
+    const filteredcount = await countFilteredReports(
       user_id as string,
       user as string,
       role as string,
@@ -65,10 +65,21 @@ route.get('/', async (req: Request, res: Response) => {
       status as Status
     )
 
+    const countAllReport = await countFilteredReports(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
+
     return res.status(200).json({
       message: 'Get all reports successful',
       data: reports,
-      count
+      filteredcount,
+      countAllReport
     })
   } catch (error) {
     responseError(error, res)

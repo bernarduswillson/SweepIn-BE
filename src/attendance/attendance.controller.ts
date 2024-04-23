@@ -42,7 +42,7 @@ route.get('/', async (req: Request, res: Response) => {
       per_page as string
     )
 
-    const count = await countFilteredAttendance(
+    const filteredcount = await countFilteredAttendance(
       user_id as string,
       user as string,
       role as string,
@@ -52,10 +52,20 @@ route.get('/', async (req: Request, res: Response) => {
 
     )
 
+    const countAllAttendance = await countFilteredAttendance(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    )
+
     res.status(200).json({
       message: 'Get all attendance successful',
       data: attendances,
-      count
+      filteredcount,
+      countAllAttendance 
     })
   } catch (error) {
     responseError(error, res)
