@@ -4,14 +4,15 @@ import {
   getUsers,
   getUserByEmail,
   getUserByName,
+  countAllUsers,
+  countFilteredUsers,
   updateUserById,
   generateUser,
-  countUsers,
   deleteUserById,
   getUserById
 } from './auth.repository'
 import { InvalidAttributeError } from '../class/Error'
-import { Role, Location } from '@prisma/client'
+import { Role, Location, UserStatus } from '@prisma/client'
 /**
  * Get all users
  *
@@ -23,13 +24,28 @@ const findUsers = async (
   name: string | undefined,
   role: string | undefined,
   location: string | undefined,
+  status: string | undefined,
   page: string,
   perPage: string
 ) => {
+  // Verify the role and location match the enum
+  if (role && !(role in Role)) {
+    throw new InvalidAttributeError('Invalid role')
+  }
+
+  if (location && !(location in Location)) {
+    throw new InvalidAttributeError('Invalid location')
+  }
+
+  if (status && !(status in UserStatus)) {
+    throw new InvalidAttributeError('Invalid status')
+  }
+
   const users = await getUsers(
     name,
     role,
     location,
+    status,
     parseInt(page),
     parseInt(perPage)
   )
@@ -38,7 +54,16 @@ const findUsers = async (
     throw new Error('Users not found')
   }
 
-  return users
+  const FilteredUsersCount = await countFilteredUsers(
+    name,
+    role,
+    location,
+    status
+  )
+
+  const AllUsersCount = await countAllUsers()
+
+  return { users, FilteredUsersCount, AllUsersCount }
 }
 
 const findOneUser = async (userId: number) => {
@@ -56,15 +81,20 @@ const updateUser = async (
   email: string,
   name: string,
   role: string,
-  location: string
+  location: string,
+  status: string
 ) => {
-  // Verify the role and location match the enum
+  // Verify the role, location, and status match the enum
   if (!(role in Role)) {
     throw new InvalidAttributeError('Invalid role')
   }
 
   if (!(location in Location)) {
     throw new InvalidAttributeError('Invalid location')
+  }
+
+  if (!(status in UserStatus)) {
+    throw new InvalidAttributeError('Invalid status')
   }
 
   const userExists = await getUserById(userId)
@@ -90,18 +120,11 @@ const updateUser = async (
     email,
     name,
     role as Role,
-    location as Location
+    location as Location,
+    status as UserStatus
   )
 
   return updatedUser
-}
-
-const countFilteredUsers = async (
-  name: string | undefined,
-  role: string | undefined,
-  location: string | undefined
-) => {
-  return await countUsers(name, role, location)
 }
 
 /**
@@ -184,6 +207,5 @@ export {
   updateUser,
   verifyUserByEmail,
   createUser,
-  countFilteredUsers,
   removeUser
 }
