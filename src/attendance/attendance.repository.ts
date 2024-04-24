@@ -39,7 +39,9 @@ const findAllAttendance = async (
     where: {
       user: {
         id: userId,
-        name: user ? user.toLowerCase() : undefined,
+        name: {
+          contains: user
+        },
         role: role as Role,
         location: location as Location
       },
@@ -71,7 +73,9 @@ const countAttendance = async (
     where: {
       user: {
         id: userId,
-        name: user ? user.toLowerCase() : undefined,
+        name: {
+          contains: user
+        },
         role: role as Role,
         location: location as Location
       },

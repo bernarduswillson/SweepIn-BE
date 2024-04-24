@@ -30,7 +30,9 @@ const findAllReports = async (
     where: {
       user: {
         id: userId,
-        name: user,
+        name: {
+          contains: user
+        },
         role: role as Role,
         location: location as Location
       },
@@ -75,7 +77,9 @@ const countReports = async (
     where: {
       user: {
         id: userId,
-        name: user,
+        name:{
+          contains: user
+        },
         role: role as Role,
         location: location as Location
       },
