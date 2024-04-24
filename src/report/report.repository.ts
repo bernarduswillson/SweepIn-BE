@@ -1,4 +1,4 @@
-import { Status } from '.prisma/client'
+import { ReportStatus } from '.prisma/client'
 import { db } from '../utils/db'
 import { Role, Location } from '@prisma/client'
 
@@ -10,7 +10,7 @@ const findAllReports = async (
   location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
-  status: Status | undefined,
+  status: ReportStatus | undefined,
   page: number,
   perPage: number
 ) => {
@@ -20,12 +20,12 @@ const findAllReports = async (
       user: {
         select: {
           id: true,
-          name: true,
+          name: true
         }
       },
       date: true,
       status: true,
-      description: true,
+      description: true
     },
     where: {
       user: {
@@ -37,6 +37,7 @@ const findAllReports = async (
         location: location as Location
       },
       date: {
+        // convert date to ISO string
         gte: startDate ? new Date(startDate).toISOString() : undefined,
         lte: endDate ? new Date(endDate).toISOString() : undefined
       },
@@ -48,7 +49,7 @@ const findAllReports = async (
       date: 'desc'
     }
   })
-  
+
   const imagesCount = await db.reportImage.groupBy({
     by: ['reportId'],
     _count: {
@@ -64,20 +65,20 @@ const findAllReports = async (
   })
 }
 
-const countReports = async (
+const countFilteredReports = async (
   userId: number | undefined,
   user: string | undefined,
   role: string | undefined,
   location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
-  status: Status | undefined
+  status: ReportStatus | undefined
 ) => {
-  const ret = await db.report.findMany({
+  const ret = await db.report.count({
     where: {
       user: {
         id: userId,
-        name:{
+        name: {
           contains: user
         },
         role: role as Role,
@@ -91,6 +92,10 @@ const countReports = async (
     }
   })
   return ret
+}
+
+const countAllReports = async () => {
+  return await db.report.count()
 }
 
 // Find one unique report by id
@@ -144,7 +149,7 @@ const createReportImage = async (reportId: number, url: string) => {
   return ret
 }
 
-const updateStatus = async (reportId: number, status: Status) => {
+const updateStatus = async (reportId: number, status: ReportStatus) => {
   const ret = await db.report.update({
     where: {
       id: reportId
@@ -162,5 +167,6 @@ export {
   createReport,
   createReportImage,
   updateStatus,
-  countReports
+  countFilteredReports,
+  countAllReports
 }
