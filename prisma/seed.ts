@@ -111,7 +111,21 @@ const createUser = async () => {
   return user.id
 }
 
+const generateUsers = async () => {
+  for (let i = 0; i < 10; i++) {
+    const user = await prisma.user.create({
+      data: {
+        email: `email${i}@gmail.com`,
+        name: `User ${i}`,
+        role: i % 2 === 0 ? 'CLEANER' : 'SECURITY',
+        location: i % 2 === 0 ? 'GANESHA' : 'JATINANGOR'
+      }
+    })
+  }
+}
+
 async function main() {
+  // generateUsers()
   let userid = await createUser()
   await createAttendance(userid)
   await createReport(userid)
