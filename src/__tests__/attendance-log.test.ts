@@ -10,6 +10,7 @@ const userPayload: User = {
   id: 1,
   name: 'logTest',
   email: 'logTest@test.com',
+  status: 'ACTIVE',
   role: 'SECURITY',
   location: 'GANESHA'
 }
