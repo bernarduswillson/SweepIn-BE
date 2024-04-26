@@ -65,10 +65,6 @@ const countFilteredUsers = async (
   })
 }
 
-const countAllUsers = async () => {
-  return await db.user.count()
-}
-
 const updateUserById = async (
   userId: number,
   email: string,
@@ -120,7 +116,6 @@ export {
   getUserByEmail,
   getUserById,
   getUserByName,
-  countAllUsers,
   countFilteredUsers,
   updateUserById,
   generateUser,

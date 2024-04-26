@@ -4,7 +4,6 @@ import {
   getUsers,
   getUserByEmail,
   getUserByName,
-  countAllUsers,
   countFilteredUsers,
   updateUserById,
   generateUser,
@@ -54,16 +53,16 @@ const findUsers = async (
     throw new Error('Users not found')
   }
 
-  const FilteredUsersCount = await countFilteredUsers(
-    name,
-    role,
-    location,
-    status
+  const filtered = await countFilteredUsers(name, role, location, status)
+
+  const total = await countFilteredUsers(
+    undefined,
+    undefined,
+    undefined,
+    undefined
   )
 
-  const AllUsersCount = await countAllUsers()
-
-  return { users, FilteredUsersCount, AllUsersCount }
+  return { users, filtered, total }
 }
 
 const findOneUser = async (userId: number) => {

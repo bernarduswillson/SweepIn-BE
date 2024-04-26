@@ -23,21 +23,6 @@ const filterAttendances = async (
   page: string,
   perPage: string
 ) => {
-  const attendance = await findAllAttendance(
-    userId ? parseInt(userId) : undefined,
-    user,
-    role,
-    location,
-    startDate,
-    endDate,
-    parseInt(page),
-    parseInt(perPage)
-  )
-
-  if (!attendance || attendance.length === 0) {
-    throw new NotFoundError('Attendance not found')
-  }
-
   if (
     role !== 'ADMIN' &&
     role !== 'CLEANER' &&
@@ -56,18 +41,40 @@ const filterAttendances = async (
     throw new InvalidAttributeError('Invalid location')
   }
 
-  return attendance
-}
+  const attendance = await findAllAttendance(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate,
+    parseInt(page),
+    parseInt(perPage)
+  )
 
-const countFilteredAttendance = async (
-  userId: string | undefined,
-  user: string | undefined,
-  role: string | undefined,
-  location: string | undefined,
-  startDate: string | undefined,
-  endDate: string | undefined
-) => {
-  return await countAttendance(userId ? parseInt(userId) : undefined, user, role, location, startDate, endDate)
+  if (!attendance || attendance.length === 0) {
+    throw new NotFoundError('Attendance not found')
+  }
+
+  const filtered = await countAttendance(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate
+  )
+
+  const total = await countAttendance(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  )
+
+  return { attendance, filtered, total }
 }
 
 /**
@@ -143,4 +150,4 @@ const generateAttendance = async (userId: number) => {
   return attendance.id
 }
 
-export { filterAttendances, getAttendanceDetails, generateAttendance, countFilteredAttendance }
+export { filterAttendances, getAttendanceDetails, generateAttendance }

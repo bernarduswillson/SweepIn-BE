@@ -10,8 +10,7 @@ import {
   createReportImage,
   findOneReport,
   updateStatus,
-  countFilteredReports,
-  countAllReports
+  countFilteredReports
 } from './report.repository'
 import { InvalidAttributeError, NotFoundError } from '../class/Error'
 import { getUserById } from '../auth/auth.repository'
@@ -67,7 +66,7 @@ const filterReports = async (
     throw new NotFoundError('Reports not found')
   }
 
-  const FilteredReportsCount = await countFilteredReports(
+  const filtered = await countFilteredReports(
     userId ? parseInt(userId) : undefined,
     user,
     role,
@@ -77,9 +76,17 @@ const filterReports = async (
     status
   )
 
-  const AllReportsCount = await countAllReports()
+  const total = await countFilteredReports(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  )
 
-  return { reports, FilteredReportsCount, AllReportsCount }
+  return { reports, filtered, total }
 }
 
 const getReportDetails = async (reportId: string) => {
