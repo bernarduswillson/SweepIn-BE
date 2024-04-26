@@ -94,10 +94,6 @@ const countFilteredReports = async (
   return ret
 }
 
-const countAllReports = async () => {
-  return await db.report.count()
-}
-
 // Find one unique report by id
 const findOneReport = async (reportId: number) => {
   const ret = await db.report.findUnique({
@@ -167,6 +163,5 @@ export {
   createReport,
   createReportImage,
   updateStatus,
-  countFilteredReports,
-  countAllReports
+  countFilteredReports
 }
