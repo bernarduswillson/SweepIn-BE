@@ -5,6 +5,7 @@ import { createServer } from '../utils/server'
 const userPayload: User = {
   id: 1,
   name: 'authTest',
+  status: 'ACTIVE',
   email: 'authtest@test.com',
   role: 'SECURITY',
   location: 'GANESHA'
