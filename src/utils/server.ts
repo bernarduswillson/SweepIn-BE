@@ -7,6 +7,7 @@ import attendanceController from '../attendance/attendance.controller'
 import reportController from '../report/report.controller'
 import logController from '../log/log.controller'
 import swaggerRoutes from './swagger'
+import timeController from '../time/time.controller'
 
 export const createServer = () => {
   const app = express()
@@ -21,5 +22,6 @@ export const createServer = () => {
   app.use('/report', reportController)
   app.use('/log', logController)
   app.use('/docs', swaggerRoutes)
+  app.use('/time',timeController )
   return app
 }
