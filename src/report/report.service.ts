@@ -1,4 +1,4 @@
-import { Status } from '.prisma/client'
+import { ReportStatus } from '.prisma/client'
 import fs from 'fs'
 import qrcode from 'qrcode'
 import sharp from 'sharp'
@@ -9,7 +9,8 @@ import {
   createReport,
   createReportImage,
   findOneReport,
-  updateStatus
+  updateStatus,
+  countFilteredReports
 } from './report.repository'
 import { InvalidAttributeError, NotFoundError } from '../class/Error'
 import { getUserById } from '../auth/auth.repository'
@@ -27,25 +28,10 @@ const filterReports = async (
   location: string | undefined,
   startDate: string | undefined,
   endDate: string | undefined,
-  status: Status | undefined,
+  status: ReportStatus | undefined,
   page: string,
   perPage: string
 ) => {
-  const reports = await findAllReports(
-    userId ? parseInt(userId) : undefined,
-    user,
-    role,
-    location,
-    startDate,
-    endDate,
-    status,
-    parseInt(page),
-    parseInt(perPage)
-  )
-
-  if (!reports || reports.length === 0) {
-    throw new NotFoundError('Reports not found')
-  }
   if (
     role !== 'ADMIN' &&
     role !== 'CLEANER' &&
@@ -64,7 +50,43 @@ const filterReports = async (
     throw new InvalidAttributeError('Invalid location')
   }
 
-  return reports
+  const reports = await findAllReports(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate,
+    status,
+    parseInt(page),
+    parseInt(perPage)
+  )
+
+  if (!reports || reports.length === 0) {
+    throw new NotFoundError('Reports not found')
+  }
+
+  const filtered = await countFilteredReports(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate,
+    status
+  )
+
+  const total = await countFilteredReports(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  )
+
+  return { reports, filtered, total }
 }
 
 const getReportDetails = async (reportId: string) => {
@@ -131,24 +153,23 @@ const generateAndOverlayImages = async (
     const base = fs.readFileSync('./storage/basewatermark.png')
     const logo = fs.readFileSync('./storage/sweepin-logo.png')
 
-    const qrCode = await (qrcode.toBuffer as any)(qrText, {
-        width: 315,
-        height: 315
-    })
+  const qrCode = await (qrcode.toBuffer as any)(qrText, {
+    width: 315,
+    height: 315
+  })
 
-    const baseBuffer = await sharp(base)
-        .composite ([{ input: qrCode, top: 5, left: 5 }])
-        .toBuffer()
+  const baseBuffer = await sharp(base)
+    .composite([{ input: qrCode, top: 5, left: 5 }])
+    .toBuffer()
 
-    const baseBuffer2 = await sharp(baseBuffer)
-        .composite ([{input: logo, top: 82, left: 586}])
-        .toBuffer()
-    
+  const baseBuffer2 = await sharp(baseBuffer)
+    .composite([{ input: logo, top: 82, left: 586 }])
+    .toBuffer()
 
-    const canvas = createCanvas(470, 93)
-    const context = canvas.getContext('2d')
+  const canvas = createCanvas(470, 93)
+  const context = canvas.getContext('2d')
 
-    context.clearRect(0,0,470,93)
+  context.clearRect(0, 0, 470, 93)
 
     context.font = '20px Arial'
     context.fillStyle = '#00000'
@@ -156,14 +177,18 @@ const generateAndOverlayImages = async (
     context.fillText(id, 10, 30)
     context.fillText(web, 10, 55)
 
-    const baseBuffer3 = await sharp(baseBuffer2)
-        .composite([{ input: Buffer.from(canvas.toDataURL().split(',')[1], 'base64'), top: 217, left: 320 }])
-        .toBuffer()
-    
-    const canvas2 = createCanvas(249, 211)
-    const context2 = canvas2.getContext('2d')
+  const baseBuffer3 = await sharp(baseBuffer2)
+    .composite([
+      {
+        input: Buffer.from(canvas.toDataURL().split(',')[1], 'base64'),
+        top: 217,
+        left: 320
+      }
+    ])
+    .toBuffer()
 
-    context2.clearRect(0,0,249,211)
+  const canvas2 = createCanvas(249, 211)
+  const context2 = canvas2.getContext('2d')
 
     context2.font = '20px Arial'
     context2.fillStyle = '#00000'
@@ -174,14 +199,29 @@ const generateAndOverlayImages = async (
     context2.fillText(text1, 10, 105)
     context2.fillText(text2, 10, 130)
 
-    const baseBuffer4 = await sharp(baseBuffer3)
-        .composite([{ input: Buffer.from(canvas2.toDataURL().split(',')[1], 'base64'), top: 5, left: 320 }])
-        .toBuffer()
+  context2.font = '20px Arial'
+  context2.fillStyle = '#FFFFFF'
+  context2.textAlign = 'start'
+  context2.fillText(date, 10, 30)
+  context2.fillText(time, 10, 55)
+  context2.fillText(langLong, 10, 80)
+  context2.fillText(text1, 10, 105)
+  context2.fillText(text2, 10, 130)
+
+  const baseBuffer4 = await sharp(baseBuffer3)
+    .composite([
+      {
+        input: Buffer.from(canvas2.toDataURL().split(',')[1], 'base64'),
+        top: 5,
+        left: 320
+      }
+    ])
+    .toBuffer()
 
   const processedImages = await Promise.all(
     images.map(async (image) => {
       let imageBuffer = fs.readFileSync(image.path)
-      
+
       const imgData = await sharp(imageBuffer).metadata()
       let imgWidth = imgData.width!
       let imgHeight = imgData.height!
@@ -197,10 +237,9 @@ const generateAndOverlayImages = async (
       const watermarkedImage = await sharp(imageBuffer)
         .composite([{ input: baseBuffer4, gravity: 'southwest' }])
         .toBuffer()
-      
+
       const filename = `./storage/reports/${image.filename.split('.')[0]}.${image.filename.split('.')[1]}`
       fs.unlinkSync(image.path)
-
 
       fs.writeFileSync(filename, watermarkedImage)
       return filename
@@ -216,7 +255,7 @@ const generateAndOverlayImages = async (
  * @description Update report status by id
  * @returns Report
  */
-const updateReportStatus = async (reportId: string, status: Status) => {
+const updateReportStatus = async (reportId: string, status: ReportStatus) => {
   const report = await findOneReport(parseInt(reportId))
 
   if (!report) {
@@ -226,4 +265,10 @@ const updateReportStatus = async (reportId: string, status: Status) => {
   return await updateStatus(parseInt(reportId), status)
 }
 
-export { filterReports, getReportDetails, submitReport, updateReportStatus }
+export {
+  filterReports,
+  getReportDetails,
+  submitReport,
+  updateReportStatus,
+  countFilteredReports
+}

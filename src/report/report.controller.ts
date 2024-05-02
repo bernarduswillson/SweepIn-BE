@@ -1,16 +1,18 @@
 import express from 'express'
 import multer from 'multer'
 import type { Request, Response } from 'express'
-import { Status } from '.prisma/client'
+import { ReportStatus } from '.prisma/client'
 import { responseError } from '../class/Error'
 
 import {
   filterReports,
   submitReport,
   getReportDetails,
-  updateReportStatus
+  updateReportStatus,
+  countFilteredReports
 } from './report.service'
 import { storage } from '../utils/storage'
+import { count } from 'console'
 
 const route = express.Router()
 const upload = multer({ storage: storage('reports') })
@@ -48,7 +50,7 @@ route.get('/', async (req: Request, res: Response) => {
       location as string,
       start_date as string,
       end_date as string,
-      status as Status,
+      status as ReportStatus,
       page as string,
       per_page as string
     )

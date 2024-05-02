@@ -25,19 +25,23 @@ const findAllAttendance = async (
       date: true,
       startLog: {
         select: {
-          id: true
+          id: true,
+          date: true
         }
       },
       endLog: {
         select: {
-          id: true
+          id: true,
+          date: true
         }
       }
     },
     where: {
       user: {
         id: userId,
-        name: user ? user.toLowerCase() : undefined,
+        name: {
+          contains: user
+        },
         role: role as Role,
         location: location as Location
       },
@@ -54,6 +58,33 @@ const findAllAttendance = async (
     }
   })
 
+  return ret
+}
+
+const countAttendance = async (
+  userId: number | undefined,
+  user: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  startDate: string | undefined,
+  endDate: string | undefined
+) => {
+  const ret = await db.attendance.count({
+    where: {
+      user: {
+        id: userId,
+        name: {
+          contains: user
+        },
+        role: role as Role,
+        location: location as Location
+      },
+      date: {
+        gte: startDate ? new Date(startDate).toISOString() : undefined,
+        lte: endDate ? new Date(endDate).toISOString() : undefined
+      }
+    }
+  })
   return ret
 }
 
@@ -111,4 +142,9 @@ const createAttendance = async (userId: number) => {
   return ret
 }
 
-export { findAllAttendance, findOneAttendance, createAttendance }
+export {
+  findAllAttendance,
+  findOneAttendance,
+  createAttendance,
+  countAttendance
+}

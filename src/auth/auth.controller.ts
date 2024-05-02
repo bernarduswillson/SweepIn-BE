@@ -8,7 +8,6 @@ import {
   updateUser,
   verifyUserByEmail,
   createUser,
-  countFilteredUsers,
   removeUser
 } from './auth.service'
 
@@ -20,6 +19,7 @@ const route = express.Router()
  * @param {string} name
  * @param {string} role
  * @param {string} location
+ * @param {string} status
  * @param {string} page - Current page
  * @param {string} per_page - The number of data in a page
  *
@@ -29,26 +29,20 @@ const route = express.Router()
  */
 route.get('/user', async (req: Request, res: Response) => {
   try {
-    const { name, role, location, page, per_page } = req.query
+    const { name, role, location, status, page, per_page } = req.query
 
     const users = await findUsers(
       name as string,
       role as string,
       location as string,
+      status as string,
       page as string,
       per_page as string
     )
 
-    const count = await countFilteredUsers(
-      name as string,
-      role as string,
-      location as string
-    )
-
     return res.status(200).json({
       message: 'Users fetched',
-      data: users,
-      count
+      data: users
     })
   } catch (error) {
     responseError(error, res)
@@ -82,6 +76,7 @@ route.get('/user/:userId', async (req: Request, res: Response) => {
  * @param {string} email - user's email
  * @param {string} name - user's name
  * @param {string} role - user's role
+ * @param {string} status - user's status
  * @param {string} location - user's location
  *
  * @returns user's data
@@ -91,9 +86,9 @@ route.get('/user/:userId', async (req: Request, res: Response) => {
 route.patch('/user/:userId', async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId)
-    const { email, name, role, location } = req.body
+    const { email, name, role, location, status } = req.body
 
-    const user = await updateUser(userId, email, name, role, location)
+    const user = await updateUser(userId, email, name, role, location, status)
 
     return res.status(200).json({
       message: 'User updated',

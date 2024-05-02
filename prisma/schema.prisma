@@ -11,6 +11,7 @@ model User {
   id         Int          @id @default(autoincrement())
   email      String       @unique
   name       String       @unique
+  status     UserStatus   @default(ACTIVE)
   role       Role
   location   Location
   attendance Attendance[]
@@ -52,7 +53,7 @@ model Report {
   userId      Int
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   date        DateTime      @default(now())
-  status      Status        @default(WAITING)
+  status      ReportStatus  @default(WAITING)
   description String?
   images      ReportImage[]
 }
@@ -78,8 +79,13 @@ enum Location {
   BOSSCHA
 }
 
-enum Status {
+enum ReportStatus {
   WAITING
   REJECTED
   ACCEPTED
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 }

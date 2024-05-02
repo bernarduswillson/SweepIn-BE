@@ -3,7 +3,8 @@ import { InvalidAttributeError, NotFoundError } from '../class/Error'
 import {
   createAttendance,
   findAllAttendance,
-  findOneAttendance
+  findOneAttendance,
+  countAttendance
 } from './attendance.repository'
 
 /**
@@ -22,21 +23,6 @@ const filterAttendances = async (
   page: string,
   perPage: string
 ) => {
-  const attendance = await findAllAttendance(
-    userId ? parseInt(userId) : undefined,
-    user,
-    role,
-    location,
-    startDate,
-    endDate,
-    parseInt(page),
-    parseInt(perPage)
-  )
-
-  if (!attendance || attendance.length === 0) {
-    throw new NotFoundError('Attendance not found')
-  }
-
   if (
     role !== 'ADMIN' &&
     role !== 'CLEANER' &&
@@ -55,7 +41,40 @@ const filterAttendances = async (
     throw new InvalidAttributeError('Invalid location')
   }
 
-  return attendance
+  const attendance = await findAllAttendance(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate,
+    parseInt(page),
+    parseInt(perPage)
+  )
+
+  if (!attendance || attendance.length === 0) {
+    throw new NotFoundError('Attendance not found')
+  }
+
+  const filtered = await countAttendance(
+    userId ? parseInt(userId) : undefined,
+    user,
+    role,
+    location,
+    startDate,
+    endDate
+  )
+
+  const total = await countAttendance(
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined
+  )
+
+  return { attendance, filtered, total }
 }
 
 /**

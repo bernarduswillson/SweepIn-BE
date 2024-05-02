@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import { responseError } from '../class/Error'
 
 import { filterAttendances, getAttendanceDetails } from './attendance.service'
+import { count } from 'console'
 
 const route = express.Router()
 
@@ -29,6 +30,7 @@ route.get('/', async (req: Request, res: Response) => {
       page,
       per_page
     } = req.query
+
     const attendances = await filterAttendances(
       user_id as string,
       user as string,

@@ -1,10 +1,11 @@
 import { db } from '../utils/db'
-import { Role, Location } from '@prisma/client'
+import { Role, Location, UserStatus } from '@prisma/client'
 
 const getUsers = async (
   name: string | undefined,
   role: string | undefined,
   location: string | undefined,
+  status: string | undefined,
   page: number,
   perPage: number
 ) => {
@@ -14,7 +15,8 @@ const getUsers = async (
         contains: name
       },
       role: role as Role,
-      location: location as Location
+      location: location as Location,
+      status: status as UserStatus
     },
     skip: (page - 1) * perPage,
     take: perPage
@@ -45,12 +47,31 @@ const getUserByName = async (name: string) => {
   })
 }
 
+const countFilteredUsers = async (
+  name: string | undefined,
+  role: string | undefined,
+  location: string | undefined,
+  status: string | undefined
+) => {
+  return await db.user.count({
+    where: {
+      name: {
+        contains: name
+      },
+      role: role as Role,
+      location: location as Location,
+      status: status as UserStatus
+    }
+  })
+}
+
 const updateUserById = async (
   userId: number,
   email: string,
   name: string,
   role: Role,
-  location: Location
+  location: Location,
+  status: UserStatus
 ) => {
   return await db.user.update({
     where: {
@@ -60,23 +81,8 @@ const updateUserById = async (
       email,
       name,
       role,
-      location
-    }
-  })
-}
-
-const countUsers = async (
-  name: string | undefined,
-  role: string | undefined,
-  location: string | undefined
-) => {
-  return await db.user.count({
-    where: {
-      name: {
-        contains: name
-      },
-      role: role as Role,
-      location: location as Location
+      location,
+      status
     }
   })
 }
@@ -110,8 +116,8 @@ export {
   getUserByEmail,
   getUserById,
   getUserByName,
+  countFilteredUsers,
   updateUserById,
   generateUser,
-  countUsers,
   deleteUserById
 }
