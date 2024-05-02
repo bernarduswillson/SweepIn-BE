@@ -121,7 +121,6 @@ const generateAndOverlayImages = async (
   images: Express.Multer.File[],
   text: string
 ) => {
-    // const qrText: string = 'https://www.sweepin.itb.ac.id/report/69420'
     const text1: string = 'Lorem Ipsum sir Dolor'
     const text2: string = 'Example Text'
     const date: string = '19 April 2024'
@@ -152,7 +151,7 @@ const generateAndOverlayImages = async (
     context.clearRect(0,0,470,93)
 
     context.font = '20px Arial'
-    context.fillStyle = '#FFFFFF'
+    context.fillStyle = '#00000'
     context.textAlign = 'start'
     context.fillText(id, 10, 30)
     context.fillText(web, 10, 55)
@@ -167,7 +166,7 @@ const generateAndOverlayImages = async (
     context2.clearRect(0,0,249,211)
 
     context2.font = '20px Arial'
-    context2.fillStyle = '#FFFFFF'
+    context2.fillStyle = '#00000'
     context2.textAlign = 'start'
     context2.fillText(date, 10, 30)
     context2.fillText(time, 10, 55)
