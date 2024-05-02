@@ -143,16 +143,15 @@ const generateAndOverlayImages = async (
   images: Express.Multer.File[],
   text: string
 ) => {
-  // const qrText: string = 'https://www.sweepin.itb.ac.id/report/69420'
-  const text1: string = 'Lorem Ipsum sir Dolor'
-  const text2: string = 'Example Text'
-  const date: string = '19 April 2024'
-  const time: string = '23:59'
-  const langLong: string = `123.45 432.31`
-  const id: string = 'id : 69420'
-  const web: string = 'www.sweepin.itb.ac.id'
-  const base = fs.readFileSync('./storage/basewatermark.png')
-  const logo = fs.readFileSync('./storage/sweepin-logo.png')
+    const text1: string = 'Lorem Ipsum sir Dolor'
+    const text2: string = 'Example Text'
+    const date: string = '19 April 2024'
+    const time: string = '23:59'
+    const langLong: string = `123.45 432.31`
+    const id: string = 'id : 69420'
+    const web: string = 'www.sweepin.itb.ac.id'
+    const base = fs.readFileSync('./storage/basewatermark.png')
+    const logo = fs.readFileSync('./storage/sweepin-logo.png')
 
   const qrCode = await (qrcode.toBuffer as any)(qrText, {
     width: 315,
@@ -172,11 +171,11 @@ const generateAndOverlayImages = async (
 
   context.clearRect(0, 0, 470, 93)
 
-  context.font = '20px Arial'
-  context.fillStyle = '#FFFFFF'
-  context.textAlign = 'start'
-  context.fillText(id, 10, 30)
-  context.fillText(web, 10, 55)
+    context.font = '20px Arial'
+    context.fillStyle = '#00000'
+    context.textAlign = 'start'
+    context.fillText(id, 10, 30)
+    context.fillText(web, 10, 55)
 
   const baseBuffer3 = await sharp(baseBuffer2)
     .composite([
@@ -191,7 +190,14 @@ const generateAndOverlayImages = async (
   const canvas2 = createCanvas(249, 211)
   const context2 = canvas2.getContext('2d')
 
-  context2.clearRect(0, 0, 249, 211)
+    context2.font = '20px Arial'
+    context2.fillStyle = '#00000'
+    context2.textAlign = 'start'
+    context2.fillText(date, 10, 30)
+    context2.fillText(time, 10, 55)
+    context2.fillText(langLong, 10, 80)
+    context2.fillText(text1, 10, 105)
+    context2.fillText(text2, 10, 130)
 
   context2.font = '20px Arial'
   context2.fillStyle = '#FFFFFF'
