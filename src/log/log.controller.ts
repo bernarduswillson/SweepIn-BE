@@ -33,11 +33,11 @@ route.post('/start', upload.any(), async (req: Request, res: Response) => {
 
 route.post('/end', upload.any(), async (req: Request, res: Response) => {
   try {
-    const { attendanceId, date, latitude, longitude } = req.body
+    const { userId, date, latitude, longitude } = req.body
     const { files } = req
 
     const log = await endLog(
-      attendanceId as string,
+      userId as string,
       date as string,
       files as Express.Multer.File[],
       latitude as string,

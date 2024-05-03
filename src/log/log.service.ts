@@ -89,13 +89,13 @@ const editStartLog = async (
 }
 
 const endLog = async (
-  attendanceId: string,
+  userId: string,
   date: string,
   images: Express.Multer.File[],
   latitude: string,
   longitude: string
 ) => {
-  const endLogExists = await getTodayEndLog(parseInt(attendanceId))
+  const endLogExists = await getTodayEndLog(parseInt(userId))
 
   return endLogExists
     ? editEndLog(
@@ -105,25 +105,23 @@ const endLog = async (
         parseFloat(longitude),
         images
       )
-    : submitEndLog(attendanceId, date, images, latitude, longitude)
+    : submitEndLog(
+      date,
+      parseFloat(latitude),
+      parseFloat(longitude),
+      await generateAttendance(parseInt(userId)),
+      images 
+      )
 }
 
 const submitEndLog = async (
-  attendanceId: string,
   date: string,
-  images: Express.Multer.File[],
-  latitude: string,
-  longitude: string
+  latitude: number,
+  longitude: number,
+  attendanceId: number,
+  images: Express.Multer.File[]
 ) => {
-  const attendanceExists = await findOneAttendance(parseInt(attendanceId))
-
-  if (!attendanceExists) {
-    throw new NotFoundError('Attendance does not exist')
-  }
-
-  if (attendanceExists.endLog.length > 0) {
-    throw new Error('Attendance already ended')
-  }
+  const {id} = await createEndLog(date, latitude, longitude, attendanceId)
 
   const _ = await generateAndOverlayImage(
     'http://www.sweepin.itb.ac.id/log/138',
@@ -131,18 +129,11 @@ const submitEndLog = async (
     'Example text'
   )
 
-  const { id } = await createEndLog(
-    date,
-    parseFloat(latitude),
-    parseFloat(longitude),
-    parseInt(attendanceId)
-  )
-
   for (const image of images) {
     await createLogImage(id, image.path)
   }
 
-  return { attendanceId: parseInt(attendanceId), id }
+  return { attendanceId, id}
 }
 
 const editEndLog = async (
