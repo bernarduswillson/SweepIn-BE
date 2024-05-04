@@ -9,10 +9,9 @@ import {
   submitReport,
   getReportDetails,
   updateReportStatus,
-  countFilteredReports
+  countAllReports
 } from './report.service'
 import { storage } from '../utils/storage'
-import { count } from 'console'
 
 const route = express.Router()
 const upload = multer({ storage: storage('reports') })
@@ -59,6 +58,36 @@ route.get('/', async (req: Request, res: Response) => {
       message: 'Get all reports successful',
       data: reports
     })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method GET /report/count
+ * @param {string} role
+ * @param {string} location
+ * @returns count reports of each date
+ * 
+ * @example http://{{base_url}}/report/count?role=:role&location=:location
+ */
+route.get('/count', async (req: Request, res: Response) => {
+  try {
+    const {
+      role,
+      location,
+    } = req.query
+
+    const count = await countAllReports(
+      role as string,
+      location as string,
+    )
+
+    res.status(200).json({
+      message: 'Get amount of reports successful',
+      data: count
+    })
+
   } catch (error) {
     responseError(error, res)
   }
