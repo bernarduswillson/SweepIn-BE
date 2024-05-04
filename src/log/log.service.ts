@@ -27,11 +27,6 @@ const startLog = async (
 ) => {
   const startLogExists = await getTodayStartLog(parseInt(userId))
   const endLogExists = await getTodayEndLog(parseInt(userId))
-  console.log("==============================================================")
-  console.log("start Log :")
-  console.log(startLogExists)
-  console.log("end Log :")
-  console.log(endLogExists)
   if(endLogExists){
     throw new NotFoundError('End log already exists')
   }
@@ -107,11 +102,6 @@ const endLog = async (
 ) => {
   const startLogExists = await getTodayStartLog(parseInt(userId))
   const endLogExists = await getTodayEndLog(parseInt(userId))
-  console.log("==============================================================")
-  console.log("start Log :")
-  console.log(startLogExists)
-  console.log("end Log :")
-  console.log(endLogExists)
 
   if(startLogExists == null){
     throw new NotFoundError('Start log does not exist')
@@ -136,40 +126,6 @@ const endLog = async (
       )
     }
   }
-
-  // if(startLogExists && !endLogExists) {
-  //   submitEndLog(
-  //     date,
-  //     parseFloat(latitude),
-  //     parseFloat(longitude),
-  //     await generateAttendance(parseInt(userId)),
-  //     images
-  //   )
-  // }
-  // else if(startLogExists && endLogExists) {
-  //   editEndLog(
-  //     endLogExists,
-  //     date,
-  //     parseFloat(latitude),
-  //     parseFloat(longitude),
-  //     images
-  //   )
-  // }
-  // return endLogExists
-  //   ? editEndLog(
-  //       endLogExists,
-  //       date,
-  //       parseFloat(latitude),
-  //       parseFloat(longitude),
-  //       images
-  //     )
-  //   : submitEndLog(
-  //     date,
-  //     parseFloat(latitude),
-  //     parseFloat(longitude),
-  //     await generateAttendance(parseInt(userId)),
-  //     images 
-  //     )
 }
 
 const submitEndLog = async (
