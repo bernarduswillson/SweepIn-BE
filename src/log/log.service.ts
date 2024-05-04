@@ -25,6 +25,15 @@ const startLog = async (
   longitude: string
 ) => {
   const startLogExists = await getTodayStartLog(parseInt(userId))
+  const endLogExists = await getTodayEndLog(parseInt(userId))
+  console.log("==============================================================")
+  console.log("start Log :")
+  console.log(startLogExists)
+  console.log("end Log :")
+  console.log(endLogExists)
+  if(endLogExists){
+    throw new NotFoundError('End log already exists')
+  }
 
   return startLogExists
     ? editStartLog(
@@ -95,23 +104,72 @@ const endLog = async (
   latitude: string,
   longitude: string
 ) => {
+  const startLogExists = await getTodayStartLog(parseInt(userId))
   const endLogExists = await getTodayEndLog(parseInt(userId))
+  console.log("==============================================================")
+  console.log("start Log :")
+  console.log(startLogExists)
+  console.log("end Log :")
+  console.log(endLogExists)
 
-  return endLogExists
-    ? editEndLog(
+  if(!startLogExists){
+    throw new NotFoundError('Start log does not exist')
+  }
+  else{
+    if(endLogExists){
+      return editEndLog(
         endLogExists,
         date,
         parseFloat(latitude),
         parseFloat(longitude),
         images
       )
-    : submitEndLog(
-      date,
-      parseFloat(latitude),
-      parseFloat(longitude),
-      await generateAttendance(parseInt(userId)),
-      images 
+    }
+    else{
+      return submitEndLog(
+        date,
+        parseFloat(latitude),
+        parseFloat(longitude),
+        // startLogExists.attendanceStartId || 0,
+        await generateAttendance(parseInt(userId)),
+        images
       )
+    }
+  }
+
+  // if(startLogExists && !endLogExists) {
+  //   submitEndLog(
+  //     date,
+  //     parseFloat(latitude),
+  //     parseFloat(longitude),
+  //     await generateAttendance(parseInt(userId)),
+  //     images
+  //   )
+  // }
+  // else if(startLogExists && endLogExists) {
+  //   editEndLog(
+  //     endLogExists,
+  //     date,
+  //     parseFloat(latitude),
+  //     parseFloat(longitude),
+  //     images
+  //   )
+  // }
+  // return endLogExists
+  //   ? editEndLog(
+  //       endLogExists,
+  //       date,
+  //       parseFloat(latitude),
+  //       parseFloat(longitude),
+  //       images
+  //     )
+  //   : submitEndLog(
+  //     date,
+  //     parseFloat(latitude),
+  //     parseFloat(longitude),
+  //     await generateAttendance(parseInt(userId)),
+  //     images 
+  //     )
 }
 
 const submitEndLog = async (
