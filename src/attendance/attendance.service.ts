@@ -4,7 +4,8 @@ import {
   createAttendance,
   findAllAttendance,
   findOneAttendance,
-  countAttendance
+  countAttendance,
+  countAttendanceEachDate
 } from './attendance.repository'
 
 /**
@@ -150,4 +151,65 @@ const generateAttendance = async (userId: number) => {
   return attendance.id
 }
 
-export { filterAttendances, getAttendanceDetails, generateAttendance }
+/**
+ * Count start and end log attendance
+ *
+ * @description Count all attendance by role and location for the last 7 days from today
+ * @returns CountStartLog, CountEndLog
+ */
+const countAllAttendance = async (
+  role: string | undefined,
+  location: string | undefined,
+) => {
+  if (
+    role !== 'ADMIN' &&
+    role !== 'CLEANER' &&
+    role !== 'SECURITY' &&
+    role !== undefined
+  ) {
+    throw new InvalidAttributeError('Invalid role')
+  }
+  if (
+    location !== 'GANESHA' &&
+    location !== 'JATINANGOR' &&
+    location !== 'CIREBON' &&
+    location !== 'JAKARTA' &&
+    location !== undefined
+  ) {
+    throw new InvalidAttributeError('Invalid location')
+  }
+
+  const startDate = new Date()
+  startDate.setHours(0, 0, 0)
+  const endDate = new Date(startDate)
+  endDate.setHours(23, 59, 59)
+
+  const countStartLog: { [key: string]: number } = {}
+  const countEndLog: { [key: string]: number } = {}
+
+  for (let i = 0; i < 7; i++) {
+    countStartLog[startDate.toDateString()] = await countAttendanceEachDate(
+      startDate.toISOString(),
+      endDate.toISOString(),
+      role,
+      location,
+      'start'
+    )
+
+    countEndLog[startDate.toDateString()] = await countAttendanceEachDate(
+      startDate.toISOString(),
+      endDate.toISOString(),
+      role,
+      location,
+      'end'
+    )
+
+    startDate.setDate(startDate.getDate() - 1)
+    endDate.setDate(endDate.getDate() - 1)
+  }
+
+  return { countStartLog, countEndLog }
+}
+
+
+export { filterAttendances, getAttendanceDetails, generateAttendance, countAllAttendance }
