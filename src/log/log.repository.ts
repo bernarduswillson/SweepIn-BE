@@ -97,10 +97,21 @@ const getTodayStartLog = async (userId: number) => {
   return ret
 }
 
-const getTodayEndLog = async (attendanceEndId: number) => {
+const getTodayEndLog = async (userId: number) => {
+  const today = new Date()
+  const tomorrow = new Date(today)
+  today.setHours(0, 0, 0, 0)
+  tomorrow.setHours(23, 59, 59, 0)
+
   const ret = await db.log.findFirst({
     where: {
-      attendanceEndId
+      attendanceEnd: {
+        userId
+      },
+      date: {
+        gte: today,
+        lt: tomorrow
+      }
     }
   })
   return ret

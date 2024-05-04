@@ -16,6 +16,7 @@ import fs from 'fs'
 import { getUserById } from '../auth/auth.repository'
 import { NotFoundError } from '../class/Error'
 import { Log } from '@prisma/client'
+import { generate } from 'text-to-image'
 
 const startLog = async (
   userId: string,
@@ -25,6 +26,10 @@ const startLog = async (
   longitude: string
 ) => {
   const startLogExists = await getTodayStartLog(parseInt(userId))
+  const endLogExists = await getTodayEndLog(parseInt(userId))
+  if(endLogExists){
+    throw new NotFoundError('End log already exists')
+  }
 
   return startLogExists
     ? editStartLog(
@@ -95,23 +100,32 @@ const endLog = async (
   latitude: string,
   longitude: string
 ) => {
+  const startLogExists = await getTodayStartLog(parseInt(userId))
   const endLogExists = await getTodayEndLog(parseInt(userId))
 
-  return endLogExists
-    ? editEndLog(
+  if(startLogExists == null){
+    throw new NotFoundError('Start log does not exist')
+  }
+  else{
+    if(endLogExists){
+      return editEndLog(
         endLogExists,
         date,
         parseFloat(latitude),
         parseFloat(longitude),
         images
       )
-    : submitEndLog(
-      date,
-      parseFloat(latitude),
-      parseFloat(longitude),
-      await generateAttendance(parseInt(userId)),
-      images 
+    }
+    else{
+      return submitEndLog(
+        date,
+        parseFloat(latitude),
+        parseFloat(longitude),
+        startLogExists.attendanceStartId as number,
+        images
       )
+    }
+  }
 }
 
 const submitEndLog = async (
