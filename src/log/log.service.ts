@@ -16,6 +16,7 @@ import fs from 'fs'
 import { getUserById } from '../auth/auth.repository'
 import { NotFoundError } from '../class/Error'
 import { Log } from '@prisma/client'
+import { generate } from 'text-to-image'
 
 const startLog = async (
   userId: string,
@@ -112,7 +113,7 @@ const endLog = async (
   console.log("end Log :")
   console.log(endLogExists)
 
-  if(!startLogExists){
+  if(startLogExists == null){
     throw new NotFoundError('Start log does not exist')
   }
   else{
@@ -130,8 +131,7 @@ const endLog = async (
         date,
         parseFloat(latitude),
         parseFloat(longitude),
-        // startLogExists.attendanceStartId || 0,
-        await generateAttendance(parseInt(userId)),
+        startLogExists.attendanceStartId as number,
         images
       )
     }
