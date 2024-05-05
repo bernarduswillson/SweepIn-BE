@@ -208,6 +208,10 @@ const countAllAttendance = async (
     endDate.setDate(endDate.getDate() - 1)
   }
 
+  if (Object.keys(countStartLog).length === 0) {
+    throw new NotFoundError('Attendance not found')
+  }
+
   return { countStartLog, countEndLog }
 }
 

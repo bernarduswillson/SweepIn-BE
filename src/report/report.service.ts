@@ -287,7 +287,7 @@ const countAllReports = async (
     throw new InvalidAttributeError('Invalid location')
   }
 
-  const startDate = new Date(2024, 3, 22)
+  const startDate = new Date()
   startDate.setHours(0, 0, 0)
   const endDate = new Date(startDate)
   endDate.setHours(23, 59, 59)
@@ -307,6 +307,10 @@ const countAllReports = async (
 
     startDate.setDate(startDate.getDate() - 1)
     endDate.setDate(endDate.getDate() - 1)
+  }
+
+  if (Object.keys(countReports).length === 0) {
+    throw new NotFoundError('Reports not found')
   }
 
   return countReports
