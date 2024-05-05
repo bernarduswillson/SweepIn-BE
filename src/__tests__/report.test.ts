@@ -11,6 +11,7 @@ const userPayload: User = {
   id: 1,
   name: 'reportTest',
   email: 'reportTest@test.com',
+  status: 'ACTIVE',
   role: 'SECURITY',
   location: 'CIREBON'
 }

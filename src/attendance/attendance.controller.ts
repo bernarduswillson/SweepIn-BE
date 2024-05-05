@@ -2,7 +2,7 @@ import express from 'express'
 import type { Request, Response } from 'express'
 import { responseError } from '../class/Error'
 
-import { filterAttendances, getAttendanceDetails } from './attendance.service'
+import { countAllAttendance, filterAttendances, getAttendanceDetails } from './attendance.service'
 
 const route = express.Router()
 
@@ -29,6 +29,7 @@ route.get('/', async (req: Request, res: Response) => {
       page,
       per_page
     } = req.query
+
     const attendances = await filterAttendances(
       user_id as string,
       user as string,
@@ -43,6 +44,35 @@ route.get('/', async (req: Request, res: Response) => {
     res.status(200).json({
       message: 'Get all attendance successful',
       data: attendances
+    })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method GET /attendance/count
+ * @param {string} role
+ * @param {string} location
+ * @returns count start and end attendance of each date
+ * 
+ * @example http://{{base_url}}/attendance/count?role=:role&location=:location
+ */
+route.get('/count', async (req: Request, res: Response) => {
+  try {
+    const {
+      role,
+      location,
+    } = req.query
+
+    const count = await countAllAttendance(
+      role as string,
+      location as string,
+    )
+
+    res.status(200).json({
+      message: 'Get all attendance successful',
+      data: count
     })
   } catch (error) {
     responseError(error, res)

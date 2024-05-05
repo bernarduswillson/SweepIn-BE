@@ -1,14 +1,15 @@
 import express from 'express'
 import multer from 'multer'
 import type { Request, Response } from 'express'
-import { Status } from '.prisma/client'
+import { ReportStatus } from '.prisma/client'
 import { responseError } from '../class/Error'
 
 import {
   filterReports,
   submitReport,
   getReportDetails,
-  updateReportStatus
+  updateReportStatus,
+  countAllReports
 } from './report.service'
 import { storage } from '../utils/storage'
 
@@ -48,7 +49,7 @@ route.get('/', async (req: Request, res: Response) => {
       location as string,
       start_date as string,
       end_date as string,
-      status as Status,
+      status as ReportStatus,
       page as string,
       per_page as string
     )
@@ -57,6 +58,36 @@ route.get('/', async (req: Request, res: Response) => {
       message: 'Get all reports successful',
       data: reports
     })
+  } catch (error) {
+    responseError(error, res)
+  }
+})
+
+/**
+ * @method GET /report/count
+ * @param {string} role
+ * @param {string} location
+ * @returns count reports of each date
+ * 
+ * @example http://{{base_url}}/report/count?role=:role&location=:location
+ */
+route.get('/count', async (req: Request, res: Response) => {
+  try {
+    const {
+      role,
+      location,
+    } = req.query
+
+    const count = await countAllReports(
+      role as string,
+      location as string,
+    )
+
+    res.status(200).json({
+      message: 'Get amount of reports successful',
+      data: count
+    })
+
   } catch (error) {
     responseError(error, res)
   }
