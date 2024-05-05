@@ -265,10 +265,63 @@ const updateReportStatus = async (reportId: string, status: ReportStatus) => {
   return await updateStatus(parseInt(reportId), status)
 }
 
+const countAllReports = async (
+  role: string | undefined,
+  location: string | undefined,
+) => {
+  if (
+    role !== 'ADMIN' &&
+    role !== 'CLEANER' &&
+    role !== 'SECURITY' &&
+    role !== undefined
+  ) {
+    throw new InvalidAttributeError('Invalid role')
+  }
+  if (
+    location !== 'GANESHA' &&
+    location !== 'JATINANGOR' &&
+    location !== 'CIREBON' &&
+    location !== 'JAKARTA' &&
+    location !== undefined
+  ) {
+    throw new InvalidAttributeError('Invalid location')
+  }
+
+  const startDate = new Date()
+  startDate.setHours(0, 0, 0)
+  const endDate = new Date(startDate)
+  endDate.setHours(23, 59, 59)
+
+  const countReports: { [key: string]: number } = {}
+
+  for (let i = 0; i < 7; i++) {
+    countReports[startDate.toDateString()] = await countFilteredReports(
+      undefined,
+      undefined,
+      role,
+      location,
+      startDate.toISOString(),
+      endDate.toISOString(),
+      undefined
+    )
+
+    startDate.setDate(startDate.getDate() - 1)
+    endDate.setDate(endDate.getDate() - 1)
+  }
+
+  if (Object.keys(countReports).length === 0) {
+    throw new NotFoundError('Reports not found')
+  }
+
+  return countReports
+}
+
+
 export {
   filterReports,
   getReportDetails,
   submitReport,
   updateReportStatus,
-  countFilteredReports
+  countFilteredReports,
+  countAllReports
 }

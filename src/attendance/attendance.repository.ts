@@ -1,4 +1,3 @@
-import { UnauthorizedError } from '../class/Error'
 import { db } from '../utils/db'
 import { Role, Location } from '@prisma/client'
 
@@ -88,6 +87,33 @@ const countAttendance = async (
   return ret
 }
 
+// Count attendance of each date
+const countAttendanceEachDate = async (
+  startDate: string,
+  endDate: string,
+  role: string | undefined,
+  location: string | undefined,
+  logType: 'start' | 'end'
+) => {
+  const logField = logType === 'start' ? 'startLog' : 'endLog'
+  const ret = await db.attendance.count({
+    where: {
+      date: {
+        gte: startDate,
+        lte: endDate
+      },
+      user: {
+        role: role as Role,
+        location: location as Location
+      },
+      [logField]: {
+        some: {}
+      }
+    }
+  })
+  return ret
+}
+
 // Find unique attendance by id
 const findOneAttendance = async (attendanceId: number) => {
   const ret = await db.attendance.findUnique({
@@ -146,5 +172,6 @@ export {
   findAllAttendance,
   findOneAttendance,
   createAttendance,
-  countAttendance
+  countAttendance,
+  countAttendanceEachDate
 }
