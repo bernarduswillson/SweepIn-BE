@@ -126,7 +126,7 @@ const submitReport = async (
     throw new Error('Failed to create report')
   }
   const _ = await generateAndOverlayImages(
-    'http://www.sweepin.itb.ac.id/laporan/138',
+    `${process.env.NEXT_PUBLIC_BASE_URL}/laporan/${report.id}`,
     images,
     'Example text'
   )
