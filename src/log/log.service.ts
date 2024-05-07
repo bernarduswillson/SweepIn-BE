@@ -58,7 +58,7 @@ const submitStartLog = async (
   const { id } = await createStartLog(date, latitude, longitude, attendanceId)
 
   const _ = await generateAndOverlayImage(
-    `http:/${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
     images,
     'Example text'
   )
@@ -81,7 +81,7 @@ const editStartLog = async (
   await removeLogImage(startLog.id)
 
   const _ = await generateAndOverlayImage(
-    `http://${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${startLog.attendanceStartId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${startLog.attendanceStartId}`,
     images,
     'Example text'
   )
@@ -138,7 +138,7 @@ const submitEndLog = async (
   const {id} = await createEndLog(date, latitude, longitude, attendanceId)
 
   const _ = await generateAndOverlayImage(
-    `http://${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
     images,
     'Example text'
   )
@@ -161,7 +161,7 @@ const editEndLog = async (
   await removeLogImage(endLog.id)
 
   const _ = await generateAndOverlayImage(
-    `http://${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${endLog.attendanceEndId}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${endLog.attendanceEndId}`,
     images,
     'Example text'
   )
