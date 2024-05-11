@@ -55,19 +55,22 @@ const submitStartLog = async (
   attendanceId: number,
   images: Express.Multer.File[]
 ) => {
-  const { id } = await createStartLog(date, latitude, longitude, attendanceId)
+  const log = await createStartLog(date, latitude, longitude, attendanceId)
 
   const _ = await generateAndOverlayImage(
     `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
     images,
-    'Example text'
+    `Attendance Id : ${attendanceId}`,
+    log.date.toLocaleTimeString(),
+    log.date.toLocaleDateString(),
+    `${latitude.toString()} ${longitude.toString()}`
   )
 
   for (const image of images) {
-    await createLogImage(id, image.path)
+    await createLogImage(log.id, image.path)
   }
 
-  return { attendanceId, id }
+  return { attendanceId, id: log.id }
 }
 
 const editStartLog = async (
@@ -83,7 +86,10 @@ const editStartLog = async (
   const _ = await generateAndOverlayImage(
     `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${startLog.attendanceStartId}`,
     images,
-    'Example text'
+    `Attendance Id : ${startLog.attendanceStartId}`,
+    startLog.date.toLocaleTimeString(),
+    startLog.date.toLocaleDateString(),
+    `${latitude.toString()} ${longitude.toString()}`
   )
 
   for (const image of images) {
@@ -135,19 +141,22 @@ const submitEndLog = async (
   attendanceId: number,
   images: Express.Multer.File[]
 ) => {
-  const {id} = await createEndLog(date, latitude, longitude, attendanceId)
+  const log = await createEndLog(date, latitude, longitude, attendanceId)
 
   const _ = await generateAndOverlayImage(
     `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${attendanceId}`,
     images,
-    'Example text'
+    `Attendance Id : ${attendanceId}`,
+    log.date.toLocaleTimeString(),
+    log.date.toLocaleDateString(),
+    `${latitude.toString()} ${longitude.toString()}`
   )
 
   for (const image of images) {
-    await createLogImage(id, image.path)
+    await createLogImage(log.id, image.path)
   }
 
-  return { attendanceId, id}
+  return { attendanceId, id: log.id}
 }
 
 const editEndLog = async (
@@ -163,7 +172,10 @@ const editEndLog = async (
   const _ = await generateAndOverlayImage(
     `${process.env.NEXT_PUBLIC_BASE_URL}/presensi/${endLog.attendanceEndId}`,
     images,
-    'Example text'
+    `Attendance Id : ${endLog.attendanceEndId}`,
+    endLog.date.toLocaleTimeString(),
+    endLog.date.toLocaleDateString(),
+    `${latitude.toString()} ${longitude.toString()}`
   )
 
   for (const image of images) {
@@ -176,14 +188,11 @@ const editEndLog = async (
 const generateAndOverlayImage = async (
   qrText: string,
   images: Express.Multer.File[],
-  text: string
+  id: string,
+  time: string,
+  date: string,
+  langLong: string
 ) => {
-  const text1: string = 'Lorem Ipsum sir Dolor'
-  const text2: string = 'Example Text'
-  const date: string = '19 April 2024'
-  const time: string = '23:59'
-  const langLong: string = `123.45 432.31`
-  const id: string = 'id : 69420'
   const web: string = 'www.sweepin.itb.ac.id'
   const base = fs.readFileSync('./storage/basewatermark.png')
   const logo = fs.readFileSync('./storage/sweepin-logo.png')
@@ -233,8 +242,6 @@ const generateAndOverlayImage = async (
   context2.fillText(date, 10, 30)
   context2.fillText(time, 10, 55)
   context2.fillText(langLong, 10, 80)
-  context2.fillText(text1, 10, 105)
-  context2.fillText(text2, 10, 130)
 
   const baseBuffer4 = await sharp(baseBuffer3)
     .composite([
