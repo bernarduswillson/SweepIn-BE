@@ -8,7 +8,7 @@ const image1 = path.resolve(__dirname, 'test1.png')
 const image2 = path.resolve(__dirname, 'test2.png')
 
 const userPayload: User = {
-  id: 1,
+  id: 71,
   name: 'reportTest',
   email: 'reportTest@test.com',
   status: 'ACTIVE',
@@ -19,8 +19,8 @@ const userPayload: User = {
 const imagePayload = [image1, image2]
 
 const reportPayload: Report = {
-  id: 1,
-  userId: 1,
+  id: 69420,
+  userId: 71,
   date: new Date(),
   status: 'WAITING',
   description: 'Test'
@@ -108,4 +108,25 @@ describe('Report Service', () => {
       })
     })
   })
+
+    describe('Get amount of reports', () => {
+      it('should be able to retrieve the amount of reports', async () => {
+        const { body, statusCode } = await supertest(createServer()).get('/report/count')
+        expect(statusCode).toBe(200)
+        expect(body.message).toBe('Get amount of reports successful')
+      })
+    })
+
+    describe('Change Report Status', () => {
+      it('should be able to change the status of a report', async () => {
+        const { body, statusCode } = await supertest(createServer())
+          .post('/report/status')
+          .send(`reportId=${reportPayload.id}&status=ACCEPTED`)
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+
+        expect(statusCode).toBe(200)
+        expect(body.message).toBe('Update report status successful')
+        expect(body.data.status).toBe('ACCEPTED')
+      })
+    })
 })
