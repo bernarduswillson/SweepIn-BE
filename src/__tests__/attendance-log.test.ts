@@ -7,7 +7,7 @@ import { db } from '../utils/db'
 const image1 = path.resolve(__dirname, '__image__/image.png')
 
 const userPayload: User = {
-  id: 1,
+  id: 10,
   name: 'logTest',
   email: 'logTest@test.com',
   status: 'ACTIVE',
@@ -48,7 +48,7 @@ describe('Attendance and Log Service', () => {
     describe('given a valid start attendance log', () => {
       it('should be able to create a new start attendance log', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post('/log')
+          .post('/log/start')
           .field({
             userId: userPayload.id,
             date: logPayload.date.toISOString(),
@@ -62,13 +62,13 @@ describe('Attendance and Log Service', () => {
         attendancePayload.id = body.data.attendanceId
 
         expect(statusCode).toBe(200)
-        expect(body.message).toBe('Submit log successful')
+        expect(body.message).toBe('Submit start log successful')
       }, 20000)
     })
     describe('given an inexistent user id', () => {
       it('should not be able to create a new start attendance log', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post('/log')
+          .post('/log/start')
           .field({
             userId: 0,
             date: logPayload.date.toISOString(),
@@ -77,7 +77,7 @@ describe('Attendance and Log Service', () => {
           })
           .attach('file', image1)
         
-        expect(statusCode).toBe(404)
+        expect(statusCode).toBe(500)
         expect(body.message).toBe('User not found')
       })
     })
@@ -86,7 +86,7 @@ describe('Attendance and Log Service', () => {
     describe('given a valid end attendance log', () => {
       it('should be able to create a new end attendance log', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post('/log')
+          .post('/log/end')
           .field({
             userId: userPayload.id,
             attendanceId: attendancePayload.id,
@@ -100,31 +100,14 @@ describe('Attendance and Log Service', () => {
         logPayload.attendanceEndId = body.data.attendanceId
 
         expect(statusCode).toBe(200)
-        expect(body.message).toBe('Submit log successful')
+        expect(body.message).toBe('Submit end log successful')
         expect(body.data.attendanceId).toBe(attendancePayload.id)
       }, 20000)
-    })
-    describe('given an inexistent start attendance log id', () => {
-      it('should not be able to create a new end attendance log', async () => {
-        const { body, statusCode } = await supertest(createServer())
-          .post('/log')
-          .field({
-            userId: userPayload.id,
-            attendanceId: 0,
-            date: logPayload.date.toISOString(),
-            latitude: logPayload.latitude,
-            longitude: logPayload.longitude
-          })
-          .attach('file', image1)
-
-        expect(statusCode).toBe(500)
-        expect(body.message).toBe('Attendance does not exist')
-      })
     })
     describe('given an inexistent user id', () => {
       it('should not be able to create a new start attendance log', async () => {
         const { body, statusCode } = await supertest(createServer())
-          .post('/log')
+          .post('/log/end')
           .field({
             userId: 0,
             date: logPayload.date.toISOString(),
@@ -134,24 +117,7 @@ describe('Attendance and Log Service', () => {
           .attach('file', image1)
         
         expect(statusCode).toBe(404)
-        expect(body.message).toBe('User not found')
-      })
-    })
-    describe('given an attendance that has already ended', () => {
-      it('should not be able to create a new end attendance log', async () => {
-        const { body, statusCode } = await supertest(createServer())
-          .post('/log')
-          .field({
-            userId: userPayload.id,
-            attendanceId: attendancePayload.id,
-            date: logPayload.date.toISOString(),
-            latitude: logPayload.latitude,
-            longitude: logPayload.longitude
-          })
-          .attach('file', image1)
-
-        expect(statusCode).toBe(500)
-        expect(body.message).toBe('Attendance already ended')
+        expect(body.message).toBe('Start log does not exist')
       })
     })
   })

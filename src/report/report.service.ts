@@ -126,9 +126,12 @@ const submitReport = async (
     throw new Error('Failed to create report')
   }
   const _ = await generateAndOverlayImages(
-    'http://www.sweepin.itb.ac.id/laporan/138',
+    `${process.env.NEXT_PUBLIC_BASE_URL}/laporan/${report.id}`,
     images,
-    'Example text'
+    `report id : ${report.id}`,
+    report.date.toLocaleTimeString(),
+    report.date.toLocaleDateString(),
+    `${report.description}`
   )
 
   for (const image of images) {
@@ -141,17 +144,14 @@ const submitReport = async (
 const generateAndOverlayImages = async (
   qrText: string,
   images: Express.Multer.File[],
-  text: string
+  id: string,
+  time: string,
+  date: string,
+  desc: string
 ) => {
-    const text1: string = 'Lorem Ipsum sir Dolor'
-    const text2: string = 'Example Text'
-    const date: string = '19 April 2024'
-    const time: string = '23:59'
-    const langLong: string = `123.45 432.31`
-    const id: string = 'id : 69420'
-    const web: string = 'www.sweepin.itb.ac.id'
-    const base = fs.readFileSync('./storage/basewatermark.png')
-    const logo = fs.readFileSync('./storage/sweepin-logo.png')
+  const web: string = 'www.sweepin.itb.ac.id'
+  const base = fs.readFileSync('./storage/basewatermark.png')
+  const logo = fs.readFileSync('./storage/sweepin-logo.png')
 
   const qrCode = await (qrcode.toBuffer as any)(qrText, {
     width: 315,
@@ -190,23 +190,18 @@ const generateAndOverlayImages = async (
   const canvas2 = createCanvas(249, 211)
   const context2 = canvas2.getContext('2d')
 
-    context2.font = '20px Arial'
-    context2.fillStyle = '#00000'
-    context2.textAlign = 'start'
-    context2.fillText(date, 10, 30)
-    context2.fillText(time, 10, 55)
-    context2.fillText(langLong, 10, 80)
-    context2.fillText(text1, 10, 105)
-    context2.fillText(text2, 10, 130)
-
   context2.font = '20px Arial'
-  context2.fillStyle = '#FFFFFF'
+  context2.fillStyle = '#000000'
   context2.textAlign = 'start'
   context2.fillText(date, 10, 30)
   context2.fillText(time, 10, 55)
-  context2.fillText(langLong, 10, 80)
-  context2.fillText(text1, 10, 105)
-  context2.fillText(text2, 10, 130)
+  
+  const lines: string[] = [];
+  for (let i = 0; i < desc.length / 20; i++) {
+    lines[i] = desc.substring(i * 24, (i + 1) * 24);
+    context2.fillText(lines[i], 10, 80 + i * 25);
+  }
+
 
   const baseBuffer4 = await sharp(baseBuffer3)
     .composite([
