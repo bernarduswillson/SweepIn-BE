@@ -5,7 +5,7 @@
   <img src="docs/class_diagram.jpg" width="70%" height="auto">
 </p>
 
-## Project Setup (Skip this because it's already done)
+## Project Setup
 
 1. Initialize Project and Install Dependencies
 
@@ -42,7 +42,20 @@ npx prisma db push
 npx prisma db seed
 ```
 
-4. Run the server
+4. Create a `.env` file in the root directory and add the following environment variables
+
+```env
+.env.example
+
+DATABASE_URL=mysql://user:password@localhost:3306/mydb
+PORT=1337
+STORAGE_BUCKET=sweepin.xxx.com
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
+
+
+
+5. Run the server
 
 ```bash
 npm run dev
