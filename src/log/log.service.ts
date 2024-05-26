@@ -25,6 +25,13 @@ const startLog = async (
   latitude: string,
   longitude: string
 ) => {
+
+  const userExists = await getUserById(parseInt(userId))
+
+  if(!userExists) {
+    throw new Error('User not found')
+  }
+
   const startLogExists = await getTodayStartLog(parseInt(userId))
   const endLogExists = await getTodayEndLog(parseInt(userId))
   if(endLogExists){
